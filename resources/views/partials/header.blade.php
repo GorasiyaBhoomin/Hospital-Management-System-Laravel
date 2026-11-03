@@ -728,243 +728,260 @@
     /* -----------------------------------------------------------------
        5. MOBILE RESPONSIVE HEADER & SLICKNAV NAVIGATION (PIXEL-PERFECT)
        ----------------------------------------------------------------- */
-    .kk-mobile-book-btn {
-        display: inline-flex;
-        align-items: center;
-        gap: 5px;
-        background: linear-gradient(135deg, #69275c 0%, #00a896 100%);
-        color: #ffffff !important;
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
-        font-size: 12.5px !important;
-        font-weight: 700 !important;
-        padding: 7px 13px !important;
-        border-radius: 50px !important;
-        text-decoration: none !important;
-        box-shadow: 0 3px 10px rgba(105, 39, 92, 0.22);
-        white-space: nowrap;
-        transition: all 0.25s ease;
-    }
-    .kk-mobile-book-btn:hover {
-        transform: translateY(-1px);
-        box-shadow: 0 5px 14px rgba(105, 39, 92, 0.35);
-        color: #ffffff !important;
-    }
-
-    /* Container for mobile menu target */
-    .mobile_menu {
-        position: static !important;
-        width: auto !important;
-        display: inline-flex !important;
-        align-items: center !important;
-    }
-
-    .slicknav_menu {
-        position: static !important;
-        background: transparent !important;
-        padding: 0 !important;
-        margin: 0 !important;
-        border: none !important;
-        box-shadow: none !important;
-    }
-
-    /* Modern Hamburger Button */
-    .slicknav_btn {
-        position: static !important;
-        top: 0 !important;
-        right: 0 !important;
-        margin: 0 !important;
-        float: none !important;
-        background: linear-gradient(135deg, #69275c 0%, #8b1d6b 100%) !important;
-        border-radius: 10px !important;
-        padding: 8px 10px !important;
-        cursor: pointer !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        border: none !important;
-        box-shadow: 0 2px 8px rgba(105, 39, 92, 0.28) !important;
-        transition: all 0.25s ease !important;
-        text-decoration: none !important;
-    }
-    .slicknav_btn:hover {
-        background: #69275c !important;
-        transform: scale(1.05);
-    }
-    .slicknav_btn .slicknav_icon {
-        margin: 0 !important;
-        top: 0 !important;
-        right: 0 !important;
-        width: 18px !important;
-        height: 15px !important;
-        display: block !important;
-    }
-    .slicknav_btn .slicknav_icon-bar {
-        background-color: #ffffff !important;
-        width: 18px !important;
-        height: 2.5px !important;
-        margin: 3px 0 !important;
-        border-radius: 2px !important;
-        display: block !important;
-    }
-
-    /* Full Width Dropdown Panel */
-    .main-header-area.kk-navbar-strip {
-        position: relative !important;
-    }
-
-    .slicknav_menu .slicknav_nav {
-        position: absolute !important;
-        top: 100% !important;
-        left: 0 !important;
-        right: 0 !important;
-        width: 100% !important;
-        background: #ffffff !important;
-        box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16) !important;
-        border-top: 1px solid #eef2f6 !important;
-        border-bottom: 3.5px solid #69275c !important;
-        border-radius: 0 0 18px 18px !important;
-        padding: 12px 18px 20px !important;
-        margin: 0 !important;
-        z-index: 99999 !important;
-        max-height: 80vh !important;
-        overflow-y: auto !important;
-    }
-
-    /* Mobile Nav Items */
-    .slicknav_menu .slicknav_nav > li {
-        border-bottom: 1px solid #f1f5f9 !important;
-        margin: 0 !important;
-        padding: 2px 0 !important;
-    }
-    .slicknav_menu .slicknav_nav > li:last-child {
-        border-bottom: none !important;
-    }
-
-    .slicknav_menu .slicknav_nav a,
-    .slicknav_menu .slicknav_nav .slicknav_row {
-        color: #1e293b !important;
-        font-family: 'Plus Jakarta Sans', sans-serif !important;
-        font-size: 15px !important;
-        font-weight: 700 !important;
-        padding: 10px 14px !important;
-        border-radius: 8px !important;
-        display: flex !important;
-        align-items: center !important;
-        justify-content: space-between !important;
-        text-decoration: none !important;
-        transition: all 0.2s ease !important;
-    }
-
-    .slicknav_menu .slicknav_nav a:hover,
-    .slicknav_menu .slicknav_nav .slicknav_row:hover {
-        background: #fbf5fa !important;
-        color: #69275c !important;
-    }
-
-    .slicknav_menu .slicknav_nav .slicknav_row a {
-        padding: 0 !important;
-        margin: 0 !important;
-        background: transparent !important;
-        color: inherit !important;
-    }
-
-    .slicknav_menu .slicknav_arrow {
-        float: none !important;
-        margin-left: auto !important;
-        font-size: 16px !important;
-        font-weight: 800 !important;
-        color: #69275c !important;
-        position: static !important;
-        top: auto !important;
-        display: inline-block !important;
-    }
-
-    /* Submenus (Nested Accordion inside Pages & Contact) */
-    .slicknav_nav .kk-dropdown-card,
-    .slicknav_menu .slicknav_nav ul {
-        position: static !important;
-        transform: none !important;
-        opacity: 1 !important;
-        visibility: visible !important;
-        pointer-events: auto !important;
-        box-shadow: none !important;
-        border: none !important;
-        border-left: 3px solid #00a896 !important;
-        background: #f8fafc !important;
-        border-radius: 8px !important;
-        padding: 6px 8px !important;
-        margin: 4px 0 8px 12px !important;
-        min-width: unset !important;
-        width: auto !important;
-        display: block !important;
-    }
-
-    .slicknav_nav .kk-dropdown-card li {
-        border-bottom: 1px solid #edf2f7 !important;
-        margin: 0 !important;
-        padding: 0 !important;
-    }
-    .slicknav_nav .kk-dropdown-card li:last-child {
-        border-bottom: none !important;
-    }
-
-    .slicknav_nav .kk-dropdown-item {
-        display: flex !important;
-        align-items: center !important;
-        gap: 12px !important;
-        padding: 8px 10px !important;
-        border-radius: 6px !important;
-        text-decoration: none !important;
-        background: transparent !important;
-    }
-    .slicknav_nav .kk-dropdown-item:hover {
-        background: #ffffff !important;
-    }
-
-    .slicknav_nav .kk-drop-icon {
-        width: 32px !important;
-        height: 32px !important;
-        border-radius: 6px !important;
-        display: inline-flex !important;
-        align-items: center !important;
-        justify-content: center !important;
-        flex-shrink: 0 !important;
-        font-size: 13px !important;
-    }
-
-    .slicknav_nav .kk-drop-text {
-        flex: 1 !important;
-        line-height: 1.3 !important;
-    }
-
-    .slicknav_nav .kk-drop-title {
-        font-size: 13px !important;
-        font-weight: 700 !important;
-        color: #0f172a !important;
-        display: block !important;
-    }
-
-    .slicknav_nav .kk-drop-subtitle {
-        font-size: 11px !important;
-        color: #64748b !important;
-        display: block !important;
-    }
-
-    .slicknav_nav .kk-item-arrow {
-        display: none !important;
-    }
-
-    @media (max-width: 767px) {
-        .kk-hospital-logo {
-            max-height: 38px !important;
-        }
-        .main-header-area {
-            padding: 10px 0 !important;
+    /* Desktop: STRICTLY HIDE all mobile elements */
+    @media (min-width: 992px) {
+        .mobile_menu,
+        .slicknav_menu,
+        .slicknav_btn,
+        .kk-mobile-book-btn {
+            display: none !important;
+            visibility: hidden !important;
+            opacity: 0 !important;
+            pointer-events: none !important;
         }
     }
-    @media (max-width: 420px) {
-        .kk-hospital-logo {
-            max-height: 32px !important;
+
+    /* Mobile & Tablet Only (< 992px) */
+    @media (max-width: 991px) {
+        .kk-mobile-book-btn {
+            display: inline-flex !important;
+            align-items: center;
+            gap: 5px;
+            background: linear-gradient(135deg, #69275c 0%, #00a896 100%);
+            color: #ffffff !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-size: 12.5px !important;
+            font-weight: 700 !important;
+            padding: 7px 13px !important;
+            border-radius: 50px !important;
+            text-decoration: none !important;
+            box-shadow: 0 3px 10px rgba(105, 39, 92, 0.22);
+            white-space: nowrap;
+            transition: all 0.25s ease;
+        }
+        .kk-mobile-book-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 5px 14px rgba(105, 39, 92, 0.35);
+            color: #ffffff !important;
+        }
+
+        /* Container for mobile menu target */
+        .mobile_menu {
+            position: static !important;
+            width: auto !important;
+            display: inline-flex !important;
+            align-items: center !important;
+        }
+
+        .slicknav_menu {
+            display: block !important;
+            position: static !important;
+            background: transparent !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            border: none !important;
+            box-shadow: none !important;
+        }
+
+        /* Modern Hamburger Button */
+        .slicknav_btn {
+            position: static !important;
+            top: 0 !important;
+            right: 0 !important;
+            margin: 0 !important;
+            float: none !important;
+            background: linear-gradient(135deg, #69275c 0%, #8b1d6b 100%) !important;
+            border-radius: 10px !important;
+            padding: 8px 10px !important;
+            cursor: pointer !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            border: none !important;
+            box-shadow: 0 2px 8px rgba(105, 39, 92, 0.28) !important;
+            transition: all 0.25s ease !important;
+            text-decoration: none !important;
+        }
+        .slicknav_btn:hover {
+            background: #69275c !important;
+            transform: scale(1.05);
+        }
+        .slicknav_btn .slicknav_icon {
+            margin: 0 !important;
+            top: 0 !important;
+            right: 0 !important;
+            width: 18px !important;
+            height: 15px !important;
+            display: block !important;
+        }
+        .slicknav_btn .slicknav_icon-bar {
+            background-color: #ffffff !important;
+            width: 18px !important;
+            height: 2.5px !important;
+            margin: 3px 0 !important;
+            border-radius: 2px !important;
+            display: block !important;
+        }
+
+        /* Full Width Dropdown Panel */
+        .main-header-area.kk-navbar-strip {
+            position: relative !important;
+        }
+
+        .slicknav_menu .slicknav_nav {
+            position: absolute !important;
+            top: 100% !important;
+            left: 0 !important;
+            right: 0 !important;
+            width: 100% !important;
+            background: #ffffff !important;
+            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16) !important;
+            border-top: 1px solid #eef2f6 !important;
+            border-bottom: 3.5px solid #69275c !important;
+            border-radius: 0 0 18px 18px !important;
+            padding: 12px 18px 20px !important;
+            margin: 0 !important;
+            z-index: 99999 !important;
+            max-height: 80vh !important;
+            overflow-y: auto !important;
+        }
+
+        /* Mobile Nav Items */
+        .slicknav_menu .slicknav_nav > li {
+            border-bottom: 1px solid #f1f5f9 !important;
+            margin: 0 !important;
+            padding: 2px 0 !important;
+        }
+        .slicknav_menu .slicknav_nav > li:last-child {
+            border-bottom: none !important;
+        }
+
+        .slicknav_menu .slicknav_nav a,
+        .slicknav_menu .slicknav_nav .slicknav_row {
+            color: #1e293b !important;
+            font-family: 'Plus Jakarta Sans', sans-serif !important;
+            font-size: 15px !important;
+            font-weight: 700 !important;
+            padding: 10px 14px !important;
+            border-radius: 8px !important;
+            display: flex !important;
+            align-items: center !important;
+            justify-content: space-between !important;
+            text-decoration: none !important;
+            transition: all 0.2s ease !important;
+        }
+
+        .slicknav_menu .slicknav_nav a:hover,
+        .slicknav_menu .slicknav_nav .slicknav_row:hover {
+            background: #fbf5fa !important;
+            color: #69275c !important;
+        }
+
+        .slicknav_menu .slicknav_nav .slicknav_row a {
+            padding: 0 !important;
+            margin: 0 !important;
+            background: transparent !important;
+            color: inherit !important;
+        }
+
+        .slicknav_menu .slicknav_arrow {
+            float: none !important;
+            margin-left: auto !important;
+            font-size: 16px !important;
+            font-weight: 800 !important;
+            color: #69275c !important;
+            position: static !important;
+            top: auto !important;
+            display: inline-block !important;
+        }
+
+        /* Submenus (Nested Accordion inside Pages & Contact) */
+        .slicknav_nav .kk-dropdown-card,
+        .slicknav_menu .slicknav_nav ul {
+            position: static !important;
+            transform: none !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            pointer-events: auto !important;
+            box-shadow: none !important;
+            border: none !important;
+            border-left: 3px solid #00a896 !important;
+            background: #f8fafc !important;
+            border-radius: 8px !important;
+            padding: 6px 8px !important;
+            margin: 4px 0 8px 12px !important;
+            min-width: unset !important;
+            width: auto !important;
+            display: block !important;
+        }
+
+        .slicknav_nav .kk-dropdown-card li {
+            border-bottom: 1px solid #edf2f7 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+        }
+        .slicknav_nav .kk-dropdown-card li:last-child {
+            border-bottom: none !important;
+        }
+
+        .slicknav_nav .kk-dropdown-item {
+            display: flex !important;
+            align-items: center !important;
+            gap: 12px !important;
+            padding: 8px 10px !important;
+            border-radius: 6px !important;
+            text-decoration: none !important;
+            background: transparent !important;
+        }
+        .slicknav_nav .kk-dropdown-item:hover {
+            background: #ffffff !important;
+        }
+
+        .slicknav_nav .kk-drop-icon {
+            width: 32px !important;
+            height: 32px !important;
+            border-radius: 6px !important;
+            display: inline-flex !important;
+            align-items: center !important;
+            justify-content: center !important;
+            flex-shrink: 0 !important;
+            font-size: 13px !important;
+        }
+
+        .slicknav_nav .kk-drop-text {
+            flex: 1 !important;
+            line-height: 1.3 !important;
+        }
+
+        .slicknav_nav .kk-drop-title {
+            font-size: 13px !important;
+            font-weight: 700 !important;
+            color: #0f172a !important;
+            display: block !important;
+        }
+
+        .slicknav_nav .kk-drop-subtitle {
+            font-size: 11px !important;
+            color: #64748b !important;
+            display: block !important;
+        }
+
+        .slicknav_nav .kk-item-arrow {
+            display: none !important;
+        }
+
+        @media (max-width: 767px) {
+            .kk-hospital-logo {
+                max-height: 38px !important;
+            }
+            .main-header-area {
+                padding: 10px 0 !important;
+            }
+        }
+        @media (max-width: 420px) {
+            .kk-hospital-logo {
+                max-height: 32px !important;
+            }
         }
     }
 </style>
