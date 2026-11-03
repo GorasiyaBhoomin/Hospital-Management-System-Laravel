@@ -1,0 +1,13 @@
+vendor/
+node_modules/
+.env
+.git
+.gitignore
+storage/*.key
+storage/logs/*.log
+*.pdf
+test*.pdf
+scratch/
+.idea/
+.vscode/
+

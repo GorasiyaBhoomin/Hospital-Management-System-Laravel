@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: hospital-management-system
+    runtime: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    envVars:
+      - key: APP_NAME
+        value: "KK Patel Super Speciality Hospital"
+      - key: APP_ENV
+        value: production
+      - key: APP_DEBUG
+        value: "false"
+      - key: LOG_CHANNEL
+        value: stderr
+
