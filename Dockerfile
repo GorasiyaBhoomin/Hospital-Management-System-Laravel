@@ -45,8 +45,9 @@ RUN sed -ri 's!/var/www/html!/var/www/html/public!g' \
     && a2enconf laravel
 
 # Laravel permissions
-RUN chown -R www-data:www-data storage bootstrap/cache \
-    && chmod -R 775 storage bootstrap/cache
+RUN chown -R www-data:www-data database storage bootstrap/cache \
+    && chmod -R 775 database storage bootstrap/cache \
+    && (chmod 664 database/database.sqlite 2>/dev/null || true)
 
 # Production Environment Defaults
 ENV APP_KEY=base64:0Xqr0ii6TMpGzDj1SE+jWEIpUI5g7JEiK5APTz+rKHU=

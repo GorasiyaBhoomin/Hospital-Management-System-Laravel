@@ -15,7 +15,7 @@ return [
     |
     */
 
-    'default' => env('DB_CONNECTION', 'mysql'),
+    'default' => env('DB_CONNECTION', (env('DB_HOST') && env('DB_HOST') !== '127.0.0.1' ? 'mysql' : (file_exists(database_path('database.sqlite')) ? 'sqlite' : 'mysql'))),
 
     /*
     |--------------------------------------------------------------------------
@@ -38,7 +38,7 @@ return [
         'sqlite' => [
             'driver' => 'sqlite',
             'url' => env('DATABASE_URL'),
-            'database' => env('DB_DATABASE', database_path('database.sqlite')),
+            'database' => env('DB_SQLITE_PATH', (file_exists(database_path('database.sqlite')) ? database_path('database.sqlite') : env('DB_DATABASE', database_path('database.sqlite')))),
             'prefix' => '',
             'foreign_key_constraints' => env('DB_FOREIGN_KEYS', true),
         ],

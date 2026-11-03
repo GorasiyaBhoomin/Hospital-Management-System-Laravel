@@ -118,7 +118,15 @@ class Homecontroller extends Controller
     }
     
     public function appointment(Request $request){
-		$data['departments']=DB::table('department')->orderBy('departmentname','asc')->get();
+        try {
+            $data['departments']=DB::table('department')->orderBy('departmentname','asc')->get();
+        } catch (\Throwable $e) {
+            $data['departments'] = collect([
+                (object)['id' => 1, 'departmentname' => 'Cardiologist', 'departmentimage' => 'img/departments/1.png'],
+                (object)['id' => 2, 'departmentname' => 'oncology', 'departmentimage' => 'img/departments/2.png'],
+                (object)['id' => 3, 'departmentname' => 'nephrology', 'departmentimage' => 'img/departments/3.png'],
+            ]);
+        }
 		return view('appointment',$data);
 	}
     
@@ -126,7 +134,11 @@ class Homecontroller extends Controller
     public function getdoctor(Request $request){
         $departmentId = $request->input('cid') ?: $request->post('cid'); // Retrieve department from request
         $trimmedDept = strtolower(trim((string)$departmentId));
-        $doctors = Doctors::whereRaw('LOWER(TRIM(departmentname)) = ?', [$trimmedDept])->orderBy('username', 'asc')->get();
+        try {
+            $doctors = Doctors::whereRaw('LOWER(TRIM(departmentname)) = ?', [$trimmedDept])->orderBy('username', 'asc')->get();
+        } catch (\Throwable $e) {
+            $doctors = collect();
+        }
         
         if ($doctors->isEmpty()) {
             return '<option value="">No doctors available for this department</option>';
@@ -226,27 +238,32 @@ class Homecontroller extends Controller
 
     public function doctor_fetch_data_home()
     {
-    
-        $doctor_home = Doctors::all();
-    
-       //  return $std;
-       return view('doctors',compact('doctor_home'));
+        try {
+            $doctor_home = Doctors::all();
+        } catch (\Throwable $e) {
+            $doctor_home = collect();
+        }
+        return view('doctors',compact('doctor_home'));
     }
 
     public function department_fetch_home()
     {
-    
-        $std1 = department::all();
-    
-       //  return $std;
-       return view('Department',compact('std1'));
+        try {
+            $std1 = department::all();
+        } catch (\Throwable $e) {
+            $std1 = collect();
+        }
+        return view('Department',compact('std1'));
     }
 
     public function press_fetch_data_home()
     {
-    $pressData = press_desk::all();
-    
-    return view('Pressdesk', compact('pressData'));
+        try {
+            $pressData = press_desk::all();
+        } catch (\Throwable $e) {
+            $pressData = collect();
+        }
+        return view('Pressdesk', compact('pressData'));
     }
     
 }
