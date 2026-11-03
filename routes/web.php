@@ -15,8 +15,11 @@ Route::get('/', function () {
 Route::view('index', 'index');
 Route::view('about', 'about');
 Route::get('Doctors', [Homecontroller::class, 'doctor_fetch_data_home']);
+Route::get('doctors', [Homecontroller::class, 'doctor_fetch_data_home']);
 Route::get('Department', [Homecontroller::class, 'department_fetch_home']);
+Route::get('department', [Homecontroller::class, 'department_fetch_home']);
 Route::get('Pressdesk', [Homecontroller::class, 'press_fetch_data_home']);
+Route::get('pressdesk', [Homecontroller::class, 'press_fetch_data_home']);
 Route::view('gallery', 'gallery');
 Route::view('contacts', 'contacts');
 Route::post('contact_validates', [Homecontroller::class, 'contact_validates']);

@@ -371,7 +371,7 @@ public function doctor_fetch_data_home()
         $doctor_home = Doctors::all();
     
        //  return $std;
-       return view('doctors',compact('doctor_home'));
+       return view(view()->exists('Doctors') ? 'Doctors' : 'doctors', compact('doctor_home'));
     }
 //admin
     public function doctor_fetch_data()

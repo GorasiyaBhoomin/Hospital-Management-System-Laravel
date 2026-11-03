@@ -243,7 +243,7 @@ class Homecontroller extends Controller
         } catch (\Throwable $e) {
             $doctor_home = collect();
         }
-        return view('doctors',compact('doctor_home'));
+        return view(view()->exists('Doctors') ? 'Doctors' : 'doctors', compact('doctor_home'));
     }
 
     public function department_fetch_home()
