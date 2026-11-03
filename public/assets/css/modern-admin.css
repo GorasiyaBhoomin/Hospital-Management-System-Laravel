@@ -1220,11 +1220,17 @@ body.mini-sidebar .page-wrapper {
     }
 
     .sidebar {
-        left: -260px !important;
+        left: -285px !important;
+        transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
     }
 
-    body.slide-nav .sidebar {
+    body.slide-nav .sidebar,
+    .main-wrapper.slide-nav .sidebar,
+    .slide-nav .sidebar,
+    .sidebar.opened {
         left: 0 !important;
+        margin-left: 0 !important;
+        box-shadow: 0 0 50px rgba(0, 0, 0, 0.6) !important;
     }
 
     .page-wrapper {

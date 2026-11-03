@@ -14,6 +14,149 @@
     <link rel="stylesheet" type="text/css" href="{{URL::to('/')}}/assets/css/style.css">
     <link rel="stylesheet" type="text/css" href="{{URL::to('/')}}/assets/css/modern-admin.css">
 
+    <style>
+        /* Mobile Sidebar & Header Precision */
+        @media (max-width: 991.98px) {
+            html, body {
+                overflow-x: hidden !important;
+                max-width: 100vw !important;
+            }
+
+            .header {
+                padding: 0 12px !important;
+                height: 56px !important;
+                display: flex !important;
+                align-items: center !important;
+            }
+
+            .header .header-left {
+                width: auto !important;
+                min-width: unset !important;
+                padding: 0 !important;
+                float: none !important;
+            }
+
+            .header-center-controls {
+                padding-left: 10px !important;
+            }
+
+            #mobile_btn {
+                width: 36px !important;
+                height: 36px !important;
+                border-radius: 10px !important;
+                background: rgba(255, 255, 255, 0.12) !important;
+                display: inline-flex !important;
+                align-items: center !important;
+                justify-content: center !important;
+                color: #ffffff !important;
+                text-decoration: none !important;
+                font-size: 16px !important;
+            }
+
+            #mobile_btn:hover {
+                background: rgba(255, 255, 255, 0.25) !important;
+            }
+
+            /* Offcanvas Mobile Sidebar */
+            .sidebar {
+                position: fixed !important;
+                top: 0 !important;
+                bottom: 0 !important;
+                left: -285px !important;
+                width: 275px !important;
+                z-index: 1055 !important;
+                transition: left 0.3s cubic-bezier(0.16, 1, 0.3, 1) !important;
+                box-shadow: none !important;
+            }
+
+            body.slide-nav .sidebar,
+            .main-wrapper.slide-nav .sidebar,
+            .sidebar.opened {
+                left: 0 !important;
+                box-shadow: 0 0 50px rgba(0, 0, 0, 0.6) !important;
+            }
+
+            .sidebar-close-btn {
+                position: absolute;
+                top: 14px;
+                right: 14px;
+                width: 32px;
+                height: 32px;
+                border-radius: 8px;
+                background: rgba(255, 255, 255, 0.12);
+                color: #ffffff !important;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 16px;
+                text-decoration: none !important;
+                z-index: 1060;
+                transition: all 0.2s ease;
+            }
+
+            .sidebar-close-btn:hover {
+                background: rgba(239, 68, 68, 0.9);
+                transform: rotate(90deg);
+            }
+
+            /* Backdrop Overlay */
+            .sidebar-overlay {
+                position: fixed !important;
+                top: 0 !important;
+                left: 0 !important;
+                right: 0 !important;
+                bottom: 0 !important;
+                background: rgba(15, 23, 42, 0.65) !important;
+                backdrop-filter: blur(2px) !important;
+                z-index: 1050 !important;
+                display: none;
+                transition: opacity 0.25s ease !important;
+            }
+
+            .sidebar-overlay.opened,
+            body.slide-nav .sidebar-overlay,
+            .main-wrapper.slide-nav .sidebar-overlay {
+                display: block !important;
+            }
+
+            .page-wrapper {
+                margin-left: 0 !important;
+                padding-top: 56px !important;
+                left: 0 !important;
+            }
+
+            .page-wrapper > .content {
+                padding: 14px 12px !important;
+            }
+
+            /* User Pill on mobile: clean icon with online dot */
+            .user-pill-btn {
+                padding: 4px !important;
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+            }
+            .user-pill-btn .dropdown-arrow {
+                display: none !important;
+            }
+            .mobile-user-menu {
+                display: none !important;
+            }
+
+            /* Admin Page Header & Action Wrapping */
+            .admin-page-header {
+                padding: 16px 18px !important;
+                margin-bottom: 18px !important;
+            }
+            .admin-page-title-wrap h2 {
+                font-size: 19px !important;
+            }
+            .admin-page-title-wrap p {
+                font-size: 12px !important;
+            }
+        }
+    </style>
+
     <!--[if lt IE 9]>
 		<script src="assets/js/html5shiv.min.js"></script>
 		<script src="assets/js/respond.min.js"></script>
@@ -38,10 +181,12 @@
 
             <!-- Center-Left Controls (Sidebar toggler & live badge) -->
             <div class="header-center-controls">
-                <a id="toggle_btn" href="javascript:void(0);" title="Toggle Sidebar">
+                <a id="toggle_btn" class="d-none d-lg-inline-flex" href="javascript:void(0);" title="Toggle Sidebar">
                     <i class="fa fa-bars"></i>
                 </a>
-                
+                <a id="mobile_btn" class="mobile_btn d-inline-flex d-lg-none" href="#sidebar" title="Toggle Sidebar">
+                    <i class="fa fa-bars"></i>
+                </a>
 
                 <div class="header-live-badge d-none d-md-inline-flex">
                     <span class="live-pulse-dot"></span>
@@ -160,6 +305,11 @@
 
         <!-- Left Sidebar Navigation -->
         <div class="sidebar" id="sidebar">
+            <!-- Mobile Close Button -->
+            <a href="javascript:void(0);" id="sidebar_close_btn" class="sidebar-close-btn d-flex d-lg-none" title="Close Sidebar">
+                <i class="fa fa-times"></i>
+            </a>
+
             <div class="sidebar-inner slimscroll">
                 <!-- Mini Admin Profile Card -->
                 <div class="sidebar-user-card">
@@ -324,6 +474,38 @@
     <script src="{{URL::to('/')}}/assets/js/Chart.bundle.js"></script>
     <script src="{{URL::to('/')}}/assets/js/chart.js"></script>
     <script src="{{URL::to('/')}}/assets/js/app.js"></script>
+
+    <script>
+        $(document).ready(function () {
+            // Mobile Sidebar Toggle and Dismissal
+            $(document).on('click', '#mobile_btn', function (e) {
+                e.preventDefault();
+                e.stopPropagation();
+                $('#sidebar').toggleClass('opened');
+                $('.sidebar-overlay').toggleClass('opened');
+                $('body').toggleClass('slide-nav');
+                $('.main-wrapper').toggleClass('slide-nav');
+            });
+
+            $(document).on('click', '.sidebar-overlay, #sidebar_close_btn', function (e) {
+                e.preventDefault();
+                $('#sidebar').removeClass('opened');
+                $('.sidebar-overlay').removeClass('opened');
+                $('body').removeClass('slide-nav');
+                $('.main-wrapper').removeClass('slide-nav');
+            });
+
+            // Close sidebar when clicking any direct link on mobile
+            $('#sidebar-menu a').on('click', function () {
+                if ($(window).width() < 992 && !$(this).parent().hasClass('submenu')) {
+                    $('#sidebar').removeClass('opened');
+                    $('.sidebar-overlay').removeClass('opened');
+                    $('body').removeClass('slide-nav');
+                    $('.main-wrapper').removeClass('slide-nav');
+                }
+            });
+        });
+    </script>
 
 </body>
 
