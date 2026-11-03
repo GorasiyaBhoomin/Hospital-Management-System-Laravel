@@ -40,7 +40,7 @@
                 padding-left: 10px !important;
             }
 
-            #mobile_btn {
+            #toggle_btn {
                 width: 36px !important;
                 height: 36px !important;
                 border-radius: 10px !important;
@@ -51,10 +51,20 @@
                 color: #ffffff !important;
                 text-decoration: none !important;
                 font-size: 16px !important;
+                cursor: pointer !important;
             }
 
-            #mobile_btn:hover {
+            #toggle_btn:hover {
                 background: rgba(255, 255, 255, 0.25) !important;
+            }
+
+            /* Hide any legacy mobile button */
+            .mobile_btn, #mobile_btn {
+                display: none !important;
+                visibility: hidden !important;
+                opacity: 0 !important;
+                width: 0 !important;
+                height: 0 !important;
             }
 
             /* Offcanvas Mobile Sidebar */
@@ -181,10 +191,7 @@
 
             <!-- Center-Left Controls (Sidebar toggler & live badge) -->
             <div class="header-center-controls">
-                <a id="toggle_btn" class="d-none d-lg-inline-flex" href="javascript:void(0);" title="Toggle Sidebar">
-                    <i class="fa fa-bars"></i>
-                </a>
-                <a id="mobile_btn" class="mobile_btn d-inline-flex d-lg-none" href="#sidebar" title="Toggle Sidebar">
+                <a id="toggle_btn" href="javascript:void(0);" title="Toggle Sidebar">
                     <i class="fa fa-bars"></i>
                 </a>
 
@@ -477,16 +484,38 @@
 
     <script>
         $(document).ready(function () {
-            // Mobile Sidebar Toggle and Dismissal
-            $(document).on('click', '#mobile_btn', function (e) {
+            // Universal Single Sidebar Toggle Button
+            $(document).off('click', '#toggle_btn').on('click', '#toggle_btn', function (e) {
                 e.preventDefault();
                 e.stopPropagation();
-                $('#sidebar').toggleClass('opened');
-                $('.sidebar-overlay').toggleClass('opened');
-                $('body').toggleClass('slide-nav');
-                $('.main-wrapper').toggleClass('slide-nav');
+
+                if ($(window).width() < 992) {
+                    // Mobile Viewport: Toggle slide-in drawer
+                    var isOpened = $('#sidebar').hasClass('opened');
+                    if (isOpened) {
+                        $('#sidebar').removeClass('opened');
+                        $('.sidebar-overlay').removeClass('opened');
+                        $('body').removeClass('slide-nav');
+                        $('.main-wrapper').removeClass('slide-nav');
+                    } else {
+                        $('#sidebar').addClass('opened');
+                        $('.sidebar-overlay').addClass('opened');
+                        $('body').addClass('slide-nav');
+                        $('.main-wrapper').addClass('slide-nav');
+                    }
+                } else {
+                    // Desktop Viewport: Toggle mini-sidebar
+                    if ($('body').hasClass('mini-sidebar')) {
+                        $('body').removeClass('mini-sidebar');
+                        $('.subdrop + ul').slideDown();
+                    } else {
+                        $('body').addClass('mini-sidebar');
+                        $('.subdrop + ul').slideUp();
+                    }
+                }
             });
 
+            // Close Mobile Sidebar via Overlay or [×] Close Button
             $(document).on('click', '.sidebar-overlay, #sidebar_close_btn', function (e) {
                 e.preventDefault();
                 $('#sidebar').removeClass('opened');
