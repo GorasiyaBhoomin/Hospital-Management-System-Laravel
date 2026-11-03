@@ -67,6 +67,40 @@
                 height: 0 !important;
             }
 
+            .header-icon-btn.dropdown-toggle::after {
+                display: none !important;
+            }
+
+            /* Responsive Notifications Dropdown */
+            .notifications-box {
+                z-index: 1060 !important;
+            }
+
+            @media (max-width: 575.98px) {
+                .header-right-controls {
+                    gap: 8px !important;
+                }
+                .header-icon-btn {
+                    width: 34px !important;
+                    height: 34px !important;
+                    font-size: 14px !important;
+                }
+                .notifications-box {
+                    position: absolute !important;
+                    width: min(300px, calc(100vw - 20px)) !important;
+                    right: -45px !important;
+                    left: auto !important;
+                    top: 100% !important;
+                    margin-top: 8px !important;
+                }
+            }
+            @media (max-width: 380px) {
+                .notifications-box {
+                    width: 270px !important;
+                    right: -60px !important;
+                }
+            }
+
             /* Offcanvas Mobile Sidebar */
             .sidebar {
                 position: fixed !important;
@@ -203,63 +237,77 @@
 
             <!-- Right-Hand Header Controls (Strictly pushed to far right via margin-left: auto) -->
             <div class="header-right-controls">
-                <!-- Visit Public Website -->
-                <a href="{{ url('/') }}" target="_blank" class="btn-visit-site d-none d-lg-inline-flex" title="Open patient website in a new tab">
-                    <i class="fa fa-external-link"></i>
-                    <span>Visit Website</span>
-                </a>
+                @php
+                    try {
+                        $recentAppts = \App\Models\appointment::latest()->take(4)->get();
+                        $pendingApptsCount = \App\Models\appointment::where('Status', 'Pending')->orWhereNull('Status')->count();
+                        $recentContacts = \App\Models\Contact::latest()->take(3)->get();
+                        $unrepliedContactCount = \App\Models\Contact::where('replied', 0)->orWhereNull('replied')->count();
+                        $totalBadgeCount = $pendingApptsCount > 0 ? $pendingApptsCount : ($recentAppts->count() > 0 ? $recentAppts->count() : 0);
+                        $totalMessageCount = $unrepliedContactCount > 0 ? $unrepliedContactCount : ($recentContacts->count() > 0 ? $recentContacts->count() : 0);
+                    } catch (\Exception $e) {
+                        $recentAppts = collect();
+                        $recentContacts = collect();
+                        $totalBadgeCount = 1;
+                        $totalMessageCount = 0;
+                    }
+                @endphp
 
-                <!-- Notifications Dropdown -->
-                <div class="dropdown header-dropdown-wrap d-none d-sm-inline-block">
+                <!-- Notifications Dropdown (Workable on Mobile & Desktop) -->
+                <div class="dropdown header-dropdown-wrap">
                     <a href="#" class="header-icon-btn dropdown-toggle" data-toggle="dropdown" aria-expanded="false" title="Notifications">
                         <i class="fa fa-bell-o"></i>
-                        <span class="badge-count" style="background: #ef4444;">3</span>
+                        @if($totalBadgeCount > 0)
+                            <span class="badge-count" style="background: #ef4444;">{{ $totalBadgeCount }}</span>
+                        @endif
                     </a>
-                    <div class="dropdown-menu dropdown-menu-right notifications-box">
+                    <div class="dropdown-menu dropdown-menu-right notifications-box shadow-lg">
                         <div class="notifications-header">
                             <h6><i class="fa fa-bell text-primary m-r-5"></i> Notifications</h6>
-                            <span class="badge badge-pill badge-primary" style="font-size: 11px;">3 New</span>
+                            <span class="badge badge-pill badge-primary" style="font-size: 11px;">{{ $totalBadgeCount }} Active</span>
                         </div>
                         <div class="notifications-body">
-                            <a href="{{ url('adminappointments') }}" class="noti-item">
-                                <div class="noti-icon bg-blue">
-                                    <i class="fa fa-calendar-check-o"></i>
+                            @forelse ($recentAppts as $appItem)
+                                <a href="{{ url('adminappointments') }}" class="noti-item">
+                                    <div class="noti-icon bg-blue">
+                                        <i class="fa fa-calendar-check-o"></i>
+                                    </div>
+                                    <div class="noti-text">
+                                        <strong>{{ $appItem->appointmentname ?: 'Patient Appointment' }}</strong>
+                                        <small>{{ $appItem->departmentname ?: 'OPD Consultation' }} &bull; {{ $appItem->date }}</small>
+                                    </div>
+                                </a>
+                            @empty
+                                <div class="p-3 text-center text-muted" style="font-size: 13px;">
+                                    <i class="fa fa-check-circle text-success m-r-5"></i> No pending notifications
                                 </div>
-                                <div class="noti-text">
-                                    <strong>New Appointment Booked</strong>
-                                    <small>Patient scheduled online consultation</small>
-                                </div>
-                            </a>
-                            <a href="{{ url('admindoctors') }}" class="noti-item">
-                                <div class="noti-icon bg-green">
-                                    <i class="fa fa-user-md"></i>
-                                </div>
-                                <div class="noti-text">
-                                    <strong>Specialist Doctors Ready</strong>
-                                    <small>All department heads on duty</small>
-                                </div>
-                            </a>
-                            <a href="{{ url('admincontact') }}" class="noti-item">
-                                <div class="noti-icon bg-amber">
-                                    <i class="fa fa-envelope-o"></i>
-                                </div>
-                                <div class="noti-text">
-                                    <strong>Inquiry Received</strong>
-                                    <small>New contact message in inbox</small>
-                                </div>
-                            </a>
+                            @endforelse
+
+                            @foreach ($recentContacts as $msgItem)
+                                <a href="{{ url('admincontact') }}" class="noti-item">
+                                    <div class="noti-icon bg-amber">
+                                        <i class="fa fa-envelope-o"></i>
+                                    </div>
+                                    <div class="noti-text">
+                                        <strong>Inquiry: {{ $msgItem->contactname ?: 'Guest' }}</strong>
+                                        <small>{{ Str::limit($msgItem->subject ?: $msgItem->message, 30) }}</small>
+                                    </div>
+                                </a>
+                            @endforeach
                         </div>
-                        <div class="notifications-footer">
-                            <a href="{{ url('adminappointments') }}">View All Appointments &rarr;</a>
+                        <div class="notifications-footer text-center py-2" style="background: #f8fafc; border-top: 1px solid #eef2f6;">
+                            <a href="{{ url('adminappointments') }}" style="font-size: 12.5px; font-weight: 700; color: #0284c7; text-decoration: none;">View All Appointments &rarr;</a>
                         </div>
                     </div>
                 </div>
 
-                <!-- Messages / Contact Inbox Shortcut -->
-                <div class="d-none d-sm-inline-block">
+                <!-- Messages / Contact Inbox Shortcut (Workable on Mobile & Desktop) -->
+                <div class="header-dropdown-wrap">
                     <a href="{{ url('admincontact') }}" class="header-icon-btn" title="Patient Inquiries & Messages">
                         <i class="fa fa-comment-o"></i>
-                        <span class="badge-count" style="background: #0284c7;">8</span>
+                        @if($totalMessageCount > 0)
+                            <span class="badge-count" style="background: #0284c7;">{{ $totalMessageCount }}</span>
+                        @endif
                     </a>
                 </div>
 
