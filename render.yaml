@@ -5,6 +5,8 @@ services:
     plan: free
     dockerfilePath: ./Dockerfile
     envVars:
+      - key: APP_KEY
+        value: "base64:0Xqr0ii6TMpGzDj1SE+jWEIpUI5g7JEiK5APTz+rKHU="
       - key: APP_NAME
         value: "KK Patel Super Speciality Hospital"
       - key: APP_ENV

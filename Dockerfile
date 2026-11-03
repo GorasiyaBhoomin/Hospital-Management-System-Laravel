@@ -48,6 +48,12 @@ RUN sed -ri 's!/var/www/html!/var/www/html/public!g' \
 RUN chown -R www-data:www-data storage bootstrap/cache \
     && chmod -R 775 storage bootstrap/cache
 
+# Production Environment Defaults
+ENV APP_KEY=base64:0Xqr0ii6TMpGzDj1SE+jWEIpUI5g7JEiK5APTz+rKHU=
+ENV APP_ENV=production
+ENV APP_DEBUG=false
+ENV LOG_CHANNEL=stderr
+
 EXPOSE 10000
 
 CMD ["apache2-foreground"]
