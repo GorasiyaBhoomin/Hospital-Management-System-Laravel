@@ -853,8 +853,19 @@
                             </div>
                         @endif
 
-                        @guest
-                            <!-- Patient Login Required Banner -->
+                        @if(Auth::check() && !Auth::user()->is_admin)
+                            <!-- Active Patient Banner (Regular Patient Users Only) -->
+                            <div class="alert mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2" style="background: #ecfdf5; border: 1.5px solid #a7f3d0; border-radius: 14px; padding: 12px 20px; color: #065f46;">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="fa fa-check-circle text-success" style="font-size: 18px;"></i>
+                                    <span style="font-size: 13px;">Logged in as <strong>{{ Auth::user()->name }}</strong> ({{ Auth::user()->email }})</span>
+                                </div>
+                                <a href="{{ url('/user/dashboard') }}" class="btn btn-sm btn-outline-success rounded-pill px-3 font-weight-bold" style="text-decoration: none;">
+                                    My Portal &rarr;
+                                </a>
+                            </div>
+                        @elseif(!Auth::check())
+                            <!-- Patient Login Required Banner (Guests Only) -->
                             <div class="alert mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2" style="background: #fdf2f8; border: 1.5px solid #fbcfe8; border-radius: 14px; padding: 14px 20px; color: #831843;">
                                 <div class="d-flex align-items-center gap-3">
                                     <div style="width: 36px; height: 36px; border-radius: 50%; background: #fce7f3; color: #69275c; display: flex; align-items: center; justify-content: center; font-size: 16px;">
@@ -869,18 +880,7 @@
                                     <i class="fa fa-sign-in"></i> Sign In / Register
                                 </a>
                             </div>
-                        @else
-                            <!-- Active Patient Banner -->
-                            <div class="alert mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2" style="background: #ecfdf5; border: 1.5px solid #a7f3d0; border-radius: 14px; padding: 12px 20px; color: #065f46;">
-                                <div class="d-flex align-items-center gap-2">
-                                    <i class="fa fa-check-circle text-success" style="font-size: 18px;"></i>
-                                    <span style="font-size: 13px;">Logged in as <strong>{{ Auth::user()->name }}</strong> ({{ Auth::user()->email }})</span>
-                                </div>
-                                <a href="{{ url('/user/dashboard') }}" class="btn btn-sm btn-outline-success rounded-pill px-3 font-weight-bold" style="text-decoration: none;">
-                                    My Portal &rarr;
-                                </a>
-                            </div>
-                        @endguest
+                        @endif
 
                         <form action="appointmentform_validates" method="post" id="appointmentForm">
                             @csrf

@@ -138,12 +138,18 @@
                                             </ul>
                                         </li>
 
-                                        <!-- Patient Portal Nav Link (Visible on mobile/tablet) -->
+                                        <!-- Patient / Admin Portal Nav Link (Visible on mobile/tablet) -->
                                         <li class="kk-nav-item d-lg-none">
                                             @if(Auth::check())
-                                                <a class="kk-nav-link" href="{{ Auth::user()->is_admin ? url('/admin/admindashboard') : url('/user/dashboard') }}">
-                                                    <span><i class="fa fa-user-circle text-primary"></i> Patient Portal</span>
-                                                </a>
+                                                @if(Auth::user()->is_admin)
+                                                    <a class="kk-nav-link" href="{{ url('/admin/admindashboard') }}">
+                                                        <span><i class="fa fa-shield text-danger"></i> Admin Console</span>
+                                                    </a>
+                                                @else
+                                                    <a class="kk-nav-link" href="{{ url('/user/dashboard') }}">
+                                                        <span><i class="fa fa-user-circle text-primary"></i> Patient Portal</span>
+                                                    </a>
+                                                @endif
                                             @else
                                                 <a class="kk-nav-link" href="{{ url('/user/login') }}">
                                                     <span><i class="fa fa-sign-in text-primary"></i> Patient Login / Register</span>
