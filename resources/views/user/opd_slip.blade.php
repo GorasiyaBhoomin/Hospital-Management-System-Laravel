@@ -537,10 +537,10 @@
             </div>
 
             <div class="slip-signatory">
-                <div style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 22px; color: #1e293b; line-height: 1;">
-                    Dr. Registrar
+                <div style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 22px; color: #1e293b; line-height: 1.2;">
+                    {{ $appointment->username ?: ($appointment->doctor ?: 'Dr. KK Patel') }}
                 </div>
-                <div class="slip-sign-title">Authorized Medical Registrar</div>
+                <div class="slip-sign-title">Attending Specialist Doctor</div>
                 <div class="slip-sign-sub">KK Patel Super Speciality Hospital, Bhuj</div>
             </div>
         </div>

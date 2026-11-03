@@ -11,6 +11,9 @@ use App\Models\DoctorTimeSlot;
 use App\Models\DoctorSchedule;
 use App\Models\appointment;
 use App\Models\Department;
+use App\Models\Prescription;
+use App\Models\PrescriptionMedicine;
+use App\Models\User;
 use Carbon\Carbon;
 
 class DoctorController extends Controller
@@ -166,7 +169,7 @@ class DoctorController extends Controller
         $doctor = $this->getDoctor();
         if (!$doctor) return redirect()->route('doctor.login');
 
-        $query = appointment::where(function($q) use ($doctor) {
+        $query = appointment::with('prescription.medicines')->where(function($q) use ($doctor) {
             $q->where('username', $doctor->username)
               ->orWhere('username', 'like', '%' . $doctor->username . '%');
         });
@@ -233,6 +236,315 @@ class DoctorController extends Controller
         $appointment->save();
 
         return back()->with('success', 'Appointment #KKP-' . str_pad($appointment->id, 5, '0', STR_PAD_LEFT) . ' marked as ' . $newStatus . '.');
+    }
+
+    // =========================================================================
+    // 3.1 PRESCRIPTION MANAGEMENT
+    // =========================================================================
+
+    /**
+     * Show form to create a new prescription for a completed appointment
+     */
+    public function createPrescription($id)
+    {
+        $doctor = $this->getDoctor();
+        if (!$doctor) return redirect()->route('doctor.login');
+
+        $appointment = appointment::where('id', $id)
+            ->where(function($q) use ($doctor) {
+                $q->where('username', $doctor->username)
+                  ->orWhere('username', 'like', '%' . $doctor->username . '%');
+            })->firstOrFail();
+
+        // 1. Only completed appointments can have prescriptions
+        if (strtolower(trim((string)$appointment->Status)) !== 'completed') {
+            return redirect()->route('doctor.appointments')
+                ->with('error', 'Prescription can ONLY be created for appointments marked as Completed.');
+        }
+
+        // 2. Check if a prescription already exists (prevent duplicates)
+        $existing = Prescription::where('appointment_id', $appointment->id)->first();
+        if ($existing) {
+            if ($existing->isIssued()) {
+                return redirect()->route('doctor.prescription.view', $existing->id)
+                    ->with('info', 'Prescription has already been finalized and issued for this appointment.');
+            } else {
+                return redirect()->route('doctor.prescription.edit', $existing->id)
+                    ->with('info', 'A draft prescription already exists for this appointment. You may continue editing.');
+            }
+        }
+
+        // Fetch registered patient profile if available
+        $patientUser = null;
+        if (!empty($appointment->user_id)) {
+            $patientUser = User::find($appointment->user_id);
+        }
+        if (!$patientUser && !empty($appointment->email)) {
+            $patientUser = User::where('email', $appointment->email)->first();
+        }
+
+        $prescription = null;
+        $mode = 'create';
+
+        return view('doctor.prescription_form', compact('doctor', 'appointment', 'patientUser', 'prescription', 'mode'));
+    }
+
+    /**
+     * Store newly created prescription (Draft or Issued)
+     */
+    public function storePrescription(Request $request, $id)
+    {
+        $doctor = $this->getDoctor();
+        if (!$doctor) return redirect()->route('doctor.login');
+
+        $appointment = appointment::where('id', $id)
+            ->where(function($q) use ($doctor) {
+                $q->where('username', $doctor->username)
+                  ->orWhere('username', 'like', '%' . $doctor->username . '%');
+            })->firstOrFail();
+
+        if (strtolower(trim((string)$appointment->Status)) !== 'completed') {
+            return redirect()->route('doctor.appointments')
+                ->with('error', 'Prescription can only be created for completed appointments.');
+        }
+
+        // Prevent duplicate prescription creation
+        $existing = Prescription::where('appointment_id', $appointment->id)->first();
+        if ($existing) {
+            if ($existing->isIssued()) {
+                return redirect()->route('doctor.prescription.view', $existing->id)
+                    ->with('error', 'Prescription already finalized & issued.');
+            } else {
+                return redirect()->route('doctor.prescription.edit', $existing->id)
+                    ->with('info', 'Redirected to existing draft.');
+            }
+        }
+
+        $request->validate([
+            'diagnosis' => 'required|string|max:1000',
+            'symptoms' => 'nullable|string',
+            'symptoms_duration' => 'nullable|string|max:100',
+            'clinical_notes' => 'nullable|string',
+            'medical_history' => 'nullable|string',
+            'allergies' => 'nullable|string',
+            'medical_advice' => 'nullable|string',
+            'follow_up_required' => 'nullable|in:0,1',
+            'follow_up_date' => 'nullable|date',
+            'additional_instructions' => 'nullable|string',
+            'action' => 'required|in:draft,issue',
+            'medicines' => 'nullable|array',
+            'medicines.*.medicine_name' => 'nullable|string|max:255',
+            'medicines.*.dosage' => 'nullable|string|max:100',
+            'medicines.*.frequency' => 'nullable|string|max:100',
+            'medicines.*.duration' => 'nullable|string|max:100',
+            'medicines.*.route' => 'nullable|string|max:100',
+            'medicines.*.instructions' => 'nullable|string|max:255',
+        ]);
+
+        $patientUser = null;
+        if (!empty($appointment->user_id)) {
+            $patientUser = User::find($appointment->user_id);
+        }
+        if (!$patientUser && !empty($appointment->email)) {
+            $patientUser = User::where('email', $appointment->email)->first();
+        }
+
+        $status = $request->input('action') === 'issue' ? 'issued' : 'draft';
+        $issuedAt = $status === 'issued' ? now() : null;
+
+        $prescription = DB::transaction(function() use ($request, $appointment, $doctor, $patientUser, $status, $issuedAt) {
+            $rx = Prescription::create([
+                'prescription_number' => Prescription::generatePrescriptionNumber($appointment->id),
+                'appointment_id' => $appointment->id,
+                'doctor_id' => $doctor->id,
+                'patient_id' => $patientUser ? $patientUser->id : ($appointment->user_id ?: null),
+                'symptoms' => $request->input('symptoms'),
+                'symptoms_duration' => $request->input('symptoms_duration'),
+                'diagnosis' => $request->input('diagnosis'),
+                'clinical_notes' => $request->input('clinical_notes'),
+                'medical_history' => $request->input('medical_history'),
+                'allergies' => $request->input('allergies'),
+                'medical_advice' => $request->input('medical_advice'),
+                'follow_up_required' => $request->input('follow_up_required') == '1',
+                'follow_up_date' => $request->input('follow_up_required') == '1' ? $request->input('follow_up_date') : null,
+                'additional_instructions' => $request->input('additional_instructions'),
+                'status' => $status,
+                'issued_at' => $issuedAt,
+            ]);
+
+            // Save medicines
+            if ($request->has('medicines') && is_array($request->medicines)) {
+                foreach ($request->medicines as $med) {
+                    $medName = trim($med['medicine_name'] ?? '');
+                    if (!empty($medName)) {
+                        PrescriptionMedicine::create([
+                            'prescription_id' => $rx->id,
+                            'medicine_name' => $medName,
+                            'dosage' => $med['dosage'] ?? null,
+                            'frequency' => $med['frequency'] ?? null,
+                            'duration' => $med['duration'] ?? null,
+                            'route' => $med['route'] ?? null,
+                            'instructions' => $med['instructions'] ?? null,
+                        ]);
+                    }
+                }
+            }
+
+            return $rx;
+        });
+
+        if ($status === 'issued') {
+            return redirect()->route('doctor.prescription.view', $prescription->id)
+                ->with('success', 'Prescription #' . $prescription->prescription_number . ' has been officially ISSUED to the patient.');
+        } else {
+            return redirect()->route('doctor.prescription.edit', $prescription->id)
+                ->with('success', 'Prescription draft saved successfully. You can review or finalize it anytime.');
+        }
+    }
+
+    /**
+     * Show form to edit existing draft prescription
+     */
+    public function editPrescription($id)
+    {
+        $doctor = $this->getDoctor();
+        if (!$doctor) return redirect()->route('doctor.login');
+
+        $prescription = Prescription::with(['medicines', 'appointment'])->where('id', $id)->firstOrFail();
+
+        // Doctor ownership check
+        if ($prescription->doctor_id != $doctor->id && $prescription->appointment->username !== $doctor->username) {
+            abort(403, 'Unauthorized access: You are not authorized to edit this prescription.');
+        }
+
+        // If already issued, editing is locked
+        if ($prescription->isIssued()) {
+            return redirect()->route('doctor.prescription.view', $prescription->id)
+                ->with('info', 'Issued prescriptions are locked from editing. Displaying read-only record.');
+        }
+
+        $appointment = $prescription->appointment;
+        $patientUser = null;
+        if (!empty($prescription->patient_id)) {
+            $patientUser = User::find($prescription->patient_id);
+        } elseif (!empty($appointment->email)) {
+            $patientUser = User::where('email', $appointment->email)->first();
+        }
+
+        $mode = 'edit';
+
+        return view('doctor.prescription_form', compact('doctor', 'appointment', 'patientUser', 'prescription', 'mode'));
+    }
+
+    /**
+     * Update draft prescription (Save as Draft or Issue)
+     */
+    public function updatePrescription(Request $request, $id)
+    {
+        $doctor = $this->getDoctor();
+        if (!$doctor) return redirect()->route('doctor.login');
+
+        $prescription = Prescription::with(['medicines', 'appointment'])->where('id', $id)->firstOrFail();
+
+        // Doctor ownership check
+        if ($prescription->doctor_id != $doctor->id && $prescription->appointment->username !== $doctor->username) {
+            abort(403, 'Unauthorized access.');
+        }
+
+        if ($prescription->isIssued()) {
+            return redirect()->route('doctor.prescription.view', $prescription->id)
+                ->with('error', 'This prescription has already been issued and cannot be edited.');
+        }
+
+        $request->validate([
+            'diagnosis' => 'required|string|max:1000',
+            'symptoms' => 'nullable|string',
+            'symptoms_duration' => 'nullable|string|max:100',
+            'clinical_notes' => 'nullable|string',
+            'medical_history' => 'nullable|string',
+            'allergies' => 'nullable|string',
+            'medical_advice' => 'nullable|string',
+            'follow_up_required' => 'nullable|in:0,1',
+            'follow_up_date' => 'nullable|date',
+            'additional_instructions' => 'nullable|string',
+            'action' => 'required|in:draft,issue',
+            'medicines' => 'nullable|array',
+            'medicines.*.medicine_name' => 'nullable|string|max:255',
+            'medicines.*.dosage' => 'nullable|string|max:100',
+            'medicines.*.frequency' => 'nullable|string|max:100',
+            'medicines.*.duration' => 'nullable|string|max:100',
+            'medicines.*.route' => 'nullable|string|max:100',
+            'medicines.*.instructions' => 'nullable|string|max:255',
+        ]);
+
+        $status = $request->input('action') === 'issue' ? 'issued' : 'draft';
+        $issuedAt = $status === 'issued' ? now() : null;
+
+        DB::transaction(function() use ($request, $prescription, $status, $issuedAt) {
+            $prescription->update([
+                'symptoms' => $request->input('symptoms'),
+                'symptoms_duration' => $request->input('symptoms_duration'),
+                'diagnosis' => $request->input('diagnosis'),
+                'clinical_notes' => $request->input('clinical_notes'),
+                'medical_history' => $request->input('medical_history'),
+                'allergies' => $request->input('allergies'),
+                'medical_advice' => $request->input('medical_advice'),
+                'follow_up_required' => $request->input('follow_up_required') == '1',
+                'follow_up_date' => $request->input('follow_up_required') == '1' ? $request->input('follow_up_date') : null,
+                'additional_instructions' => $request->input('additional_instructions'),
+                'status' => $status,
+                'issued_at' => $issuedAt ?: $prescription->issued_at,
+            ]);
+
+            // Replace medicines
+            PrescriptionMedicine::where('prescription_id', $prescription->id)->delete();
+
+            if ($request->has('medicines') && is_array($request->medicines)) {
+                foreach ($request->medicines as $med) {
+                    $medName = trim($med['medicine_name'] ?? '');
+                    if (!empty($medName)) {
+                        PrescriptionMedicine::create([
+                            'prescription_id' => $prescription->id,
+                            'medicine_name' => $medName,
+                            'dosage' => $med['dosage'] ?? null,
+                            'frequency' => $med['frequency'] ?? null,
+                            'duration' => $med['duration'] ?? null,
+                            'route' => $med['route'] ?? null,
+                            'instructions' => $med['instructions'] ?? null,
+                        ]);
+                    }
+                }
+            }
+        });
+
+        if ($status === 'issued') {
+            return redirect()->route('doctor.prescription.view', $prescription->id)
+                ->with('success', 'Prescription #' . $prescription->prescription_number . ' has been officially ISSUED to the patient.');
+        } else {
+            return redirect()->route('doctor.prescription.edit', $prescription->id)
+                ->with('success', 'Prescription draft updated successfully.');
+        }
+    }
+
+    /**
+     * View prescription in doctor console
+     */
+    public function viewPrescription($id)
+    {
+        $doctor = $this->getDoctor();
+        if (!$doctor) return redirect()->route('doctor.login');
+
+        $prescription = Prescription::with(['medicines', 'appointment', 'doctor', 'patient'])->where('id', $id)->firstOrFail();
+
+        // Doctor ownership check
+        if ($prescription->doctor_id != $doctor->id && $prescription->appointment->username !== $doctor->username) {
+            abort(403, 'Unauthorized access to prescription.');
+        }
+
+        $role = 'doctor';
+        $backUrl = route('doctor.appointments');
+
+        return view('prescription.view', compact('prescription', 'role', 'backUrl', 'doctor'));
     }
 
     // =========================================================================
@@ -779,6 +1091,9 @@ class DoctorController extends Controller
             'formatted_date' => $displayDate,
             'is_available' => $isAvailable,
             'is_day_off' => $isDayOff,
+            'can_book' => ($isAvailable && !$isDayOff),
+            'duty_status' => (!$isAvailable ? 'Off Duty (Out of Office)' : ($isDayOff ? 'Off Duty (' . $scheduleNotes . ')' : 'On Duty')),
+            'duty_message' => (!$isAvailable ? 'Dr. ' . $doctor->username . ' is currently marked Off Duty and is not accepting online appointments.' : ($isDayOff ? 'Doctor has scheduled weekly off on ' . $dayName . 's. Please select another date.' : 'On Duty')),
             'schedule_notes' => $scheduleNotes,
             'shift_timings' => $shiftTimings,
             'slots' => $slotsData,

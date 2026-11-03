@@ -603,10 +603,7 @@
             <div class="header-brand-wrap">
                 <a href="{{ route('doctor.dashboard') }}" class="d-flex align-items-center gap-2 text-decoration-none">
                     <img src="{{ URL::to('/') }}/img/logo2.png" alt="KK Patel Hospital" class="header-brand-logo">
-                    <div class="header-brand-text d-none d-sm-block">
-                        <div class="header-brand-title">KK PATEL HOSPITAL</div>
-                        <div class="header-brand-badge"><i class="fa fa-user-md"></i> Doctor Portal</div>
-                    </div>
+                    
                 </a>
             </div>
 

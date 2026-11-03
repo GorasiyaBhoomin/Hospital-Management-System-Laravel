@@ -106,8 +106,8 @@
                                     <select name="doctor" id="doctorSelect" class="form-control" required style="height: 46px; font-size: 14px;">
                                         <option value="">-- Choose Specialist Doctor --</option>
                                         @foreach($doctors as $doc)
-                                            <option value="{{ $doc->username }}" data-dept="{{ $doc->departmentname }}" {{ (old('doctor') == $doc->username || (isset($selectedDoc) && $selectedDoc == $doc->username)) ? 'selected' : '' }}>
-                                                {{ $doc->username }} ({{ $doc->departmentname }})
+                                            <option value="{{ $doc->username }}" data-dept="{{ $doc->departmentname }}" data-available="{{ $doc->is_available ? 1 : 0 }}" {{ (old('doctor') == $doc->username || (isset($selectedDoc) && $selectedDoc == $doc->username)) ? 'selected' : '' }}>
+                                                {{ $doc->username }} ({{ $doc->departmentname }}){{ !$doc->is_available ? ' • [Off-Duty]' : '' }}
                                             </option>
                                         @endforeach
                                     </select>
@@ -337,16 +337,38 @@
                         if (dayDisplayBadge) dayDisplayBadge.textContent = data.day;
                         if (docScheduleName) docScheduleName.textContent = data.doctor.name + ' (' + data.doctor.department + ')';
 
-                        if (data.is_day_off) {
+                        var docDispName = (data.doctor.name || '').startsWith('Dr.') ? data.doctor.name : ('Dr. ' + data.doctor.name);
+
+                        if (!data.is_available) {
+                            // Doctor Off Duty (Out of Office)
+                            scheduleNoticeBox.style.background = '#fef2f2';
+                            scheduleNoticeBox.style.borderColor = '#fecaca';
+                            docDutyStatusBadge.className = 'badge badge-danger px-3 py-1';
+                            docDutyStatusBadge.style.background = '#dc2626';
+                            docDutyStatusBadge.style.color = '#fff';
+                            docDutyStatusBadge.innerHTML = '<i class="fa fa-ban"></i> Currently Off-Duty (Out of Office)';
+                            docScheduleDetails.innerHTML = '<span class="text-danger font-weight-bold"><i class="fa fa-exclamation-triangle"></i> Doctor Notice:</span> ' + docDispName + ' is currently <strong>Off-Duty (Out of Office)</strong> and not accepting appointments online. Please choose another doctor.';
+                            if (slotStatusHint) slotStatusHint.textContent = 'Doctor is currently Off-Duty';
+                            if (slotSelect) slotSelect.innerHTML = '<option value="" disabled selected>⚠️ ' + docDispName + ' is currently Off-Duty (Out of Office) - Bookings Paused</option>';
+                            if (slotChipsContainer) {
+                                slotChipsContainer.innerHTML = '<div class="alert alert-danger py-2 px-3 mb-0 w-100 font-weight-bold" style="font-size: 13px; border-radius: 8px;"><i class="fa fa-ban mr-1"></i> ' + docDispName + ' is currently OFF DUTY / Out of Office. Online bookings are temporarily paused.</div>';
+                            }
+                            return;
+                        } else if (data.is_day_off) {
                             // Doctor Day Off
                             scheduleNoticeBox.style.background = '#fef2f2';
                             scheduleNoticeBox.style.borderColor = '#fecaca';
                             docDutyStatusBadge.className = 'badge badge-danger px-3 py-1';
                             docDutyStatusBadge.style.background = '#dc2626';
                             docDutyStatusBadge.style.color = '#fff';
-                            docDutyStatusBadge.innerHTML = '<i class="fa fa-exclamation-circle"></i> Off-Duty (' + data.schedule_notes + ')';
-                            docScheduleDetails.innerHTML = '<strong>Note:</strong> Doctor does not have regular OPD on <strong>' + data.day + 's</strong>. You may book emergency slot or choose another date.';
-                            if (slotStatusHint) slotStatusHint.textContent = 'Doctor off-duty';
+                            docDutyStatusBadge.innerHTML = '<i class="fa fa-calendar-times-o"></i> Off-Duty (' + data.schedule_notes + ')';
+                            docScheduleDetails.innerHTML = '<span class="text-danger"><strong>Note:</strong> Doctor does not have regular OPD on <strong>' + data.day + 's</strong>. Please pick another date.</span>';
+                            if (slotStatusHint) slotStatusHint.textContent = 'Doctor off-duty on ' + data.day + 's';
+                            if (slotSelect) slotSelect.innerHTML = '<option value="" disabled selected>⚠️ Doctor has weekly off on ' + data.day + 's. Pick another date.</option>';
+                            if (slotChipsContainer) {
+                                slotChipsContainer.innerHTML = '<div class="alert alert-warning py-2 px-3 mb-0 w-100" style="font-size: 13px; border-radius: 8px;"><i class="fa fa-calendar-times-o mr-1"></i> Doctor has a scheduled weekly day-off on ' + data.day + 's. Please select another date.</div>';
+                            }
+                            return;
                         } else {
                             // Doctor on duty
                             scheduleNoticeBox.style.background = '#f0fdf4';

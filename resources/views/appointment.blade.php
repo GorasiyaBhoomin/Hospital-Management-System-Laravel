@@ -1288,17 +1288,31 @@
                         if (dayBadgeElem) dayBadgeElem.textContent = data.day;
                         if (docNameElem) docNameElem.textContent = data.doctor.name + ' (' + data.doctor.department + ')';
 
-                        if (data.is_day_off) {
+                        var docDispName = (data.doctor.name || '').startsWith('Dr.') ? data.doctor.name : ('Dr. ' + data.doctor.name);
+
+                        if (!data.is_available) {
                             if (dutyStatusElem) {
-                                dutyStatusElem.textContent = 'Off-Duty (' + data.schedule_notes + ')';
+                                dutyStatusElem.textContent = '• Off-Duty (Out of Office)';
                                 dutyStatusElem.style.color = '#dc2626';
                             }
                             if (timingsElem) {
-                                timingsElem.innerHTML = '<strong>Notice:</strong> Doctor has weekly off on <strong>' + data.day + 's</strong>. You can book another day.';
+                                timingsElem.innerHTML = '<span class="text-danger font-weight-bold"><i class="fa fa-ban mr-1"></i> Doctor Notice:</span> ' + docDispName + ' is currently <strong>Off-Duty (Out of Office)</strong> and not accepting online appointments. Please choose another doctor.';
                             }
+                            timeElem.innerHTML = '<option value="" disabled selected>⚠️ ' + docDispName + ' is currently Off-Duty. Slots paused.</option>';
+                            return;
+                        } else if (data.is_day_off) {
+                            if (dutyStatusElem) {
+                                dutyStatusElem.textContent = '• Off-Duty (' + data.schedule_notes + ')';
+                                dutyStatusElem.style.color = '#dc2626';
+                            }
+                            if (timingsElem) {
+                                timingsElem.innerHTML = '<span class="text-danger font-weight-bold"><i class="fa fa-calendar-times-o mr-1"></i> Notice:</span> Doctor has weekly off on <strong>' + data.day + 's</strong>. Please choose another date.';
+                            }
+                            timeElem.innerHTML = '<option value="" disabled selected>⚠️ Doctor has weekly off on ' + data.day + 's. Choose another date.</option>';
+                            return;
                         } else {
                             if (dutyStatusElem) {
-                                dutyStatusElem.textContent = 'On Duty (Room: ' + data.doctor.room_no + ')';
+                                dutyStatusElem.textContent = '• On Duty (Room: ' + data.doctor.room_no + ')';
                                 dutyStatusElem.style.color = '#16a34a';
                             }
                             if (timingsElem) {

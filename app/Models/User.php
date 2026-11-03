@@ -25,6 +25,11 @@ class User extends Model implements Authenticatable
         return $this->hasMany(appointment::class, 'user_id');
     }
 
+    public function prescriptions()
+    {
+        return $this->hasMany(Prescription::class, 'patient_id');
+    }
+
    
 
     // The $hidden array specifies which fields should be hidden from JSON serialization

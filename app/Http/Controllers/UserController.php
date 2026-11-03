@@ -10,6 +10,8 @@ use App\Models\User;
 use App\Models\appointment;
 use App\Models\Department;
 use App\Models\Doctors;
+use App\Models\Prescription;
+use App\Models\PrescriptionMedicine;
 
 class UserController extends Controller
 {
@@ -278,6 +280,25 @@ class UserController extends Controller
             }
         }
 
+        // Validate Doctor Availability (Off-Duty / Day-Off check)
+        $doc = $request->input('username') ?: $request->input('doctor');
+        $doctorRecord = Doctors::where('username', $doc)->first();
+        if ($doctorRecord && !$doctorRecord->is_available) {
+            return back()->withInput()->withErrors([
+                'doctor' => "Dr. {$doctorRecord->username} is currently Off-Duty (Out of Office) and not accepting online appointments. Please select an available doctor.",
+                'username' => "Dr. {$doctorRecord->username} is currently Off-Duty (Out of Office) and not accepting online appointments. Please select an available doctor."
+            ]);
+        }
+        $calcDay = $request->input('day') ?: date('l', strtotime($request->date));
+        if ($doctorRecord && $calcDay) {
+            $sched = \App\Models\DoctorSchedule::where('doctor_id', $doctorRecord->id)->where('day_name', $calcDay)->first();
+            if ($sched && $sched->is_day_off) {
+                return back()->withInput()->withErrors([
+                    'date' => "Dr. {$doctorRecord->username} has a scheduled Day Off on {$calcDay}s ({$sched->notes}). Please pick another date."
+                ]);
+            }
+        }
+
         $dept   = $request->input('departmentname') ?: $request->input('department', 'General Medicine');
         $doc    = $request->input('username') ?: $request->input('doctor', 'Senior Consultant');
         $phone  = $request->input('phone') ?: $request->input('phone_number') ?: ($user->phone ?: ($user->phone_number ?: '9999999999'));
@@ -318,12 +339,46 @@ class UserController extends Controller
     {
         $user = Auth::user();
 
-        $appointments = appointment::where(function($q) use ($user) {
-            $q->where('user_id', $user->id)
-              ->orWhere('email', $user->email);
-        })->orderByDesc('id')->get();
+        $appointments = appointment::with('prescription.medicines')
+            ->where(function($q) use ($user) {
+                $q->where('user_id', $user->id)
+                  ->orWhere('email', $user->email);
+            })->orderByDesc('id')->get();
 
         return view('user.appointment_history', compact('appointments', 'user'));
+    }
+
+    /**
+     * View Issued Prescription for Logged-in Patient
+     */
+    public function viewPrescription($id)
+    {
+        $user = Auth::user();
+
+        $prescription = Prescription::with(['medicines', 'appointment', 'doctor', 'patient'])
+            ->where('id', $id)
+            ->firstOrFail();
+
+        // Security check: Only the patient (or admin) can view this prescription
+        if ($user->is_admin != 1) {
+            $isAuthorized = ($prescription->patient_id == $user->id)
+                || ($prescription->patient && $prescription->patient->email === $user->email)
+                || ($prescription->appointment && ($prescription->appointment->user_id == $user->id || strtolower((string)$prescription->appointment->email) === strtolower((string)$user->email)));
+
+            if (!$isAuthorized) {
+                abort(403, 'Unauthorized access: this medical prescription belongs to another patient.');
+            }
+
+            // Patients can ONLY access finalized 'issued' prescriptions
+            if (!$prescription->isIssued()) {
+                abort(403, 'This prescription is currently in draft review with your doctor and has not been issued yet.');
+            }
+        }
+
+        $role = 'user';
+        $backUrl = route('user.appointment.history');
+
+        return view('prescription.view', compact('prescription', 'role', 'backUrl', 'user'));
     }
 
     /**

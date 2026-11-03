@@ -108,6 +108,7 @@ Route::get('/edit_appointment', [Homecontroller::class,'edit_appointment']);
 Route::post('update_appointment', [Admincontroller::class, 'updateappointment']);
 Route::get('delete_appointment/{email}', [Admincontroller::class, 'deleteappointment']);
 Route::get('/admin/appointment/{id}/status/{status}', [Admincontroller::class, 'quick_status_update'])->name('admin.appointment.status');
+Route::get('/admin/prescription/{id}', [Admincontroller::class, 'viewPrescription'])->name('admin.prescription.view');
 
 
 // Feedback
@@ -177,6 +178,7 @@ Route::middleware(['web', 'auth'])->group(function() {
 
     Route::get('/user/appointment-history', [UserController::class, 'appointmentHistory'])->name('user.appointment.history');
     Route::get('/user/appointment/{id}/slip', [UserController::class, 'viewSlip'])->name('user.appointment.slip');
+    Route::get('/user/prescription/{id}', [UserController::class, 'viewPrescription'])->name('user.prescription.view');
     Route::post('/user/appointment/{id}/cancel', [UserController::class, 'cancelAppointment'])->name('user.appointment.cancel');
 
     Route::get('/user/doctors', [UserController::class, 'doctors'])->name('user.doctors');
@@ -202,6 +204,13 @@ Route::middleware(['web', 'doctor.auth'])->group(function() {
     // My Appointments
     Route::get('/doctor/appointments', [DoctorController::class, 'appointments'])->name('doctor.appointments');
     Route::post('/doctor/appointment/{id}/status', [DoctorController::class, 'updateAppointmentStatus'])->name('doctor.appointment.status');
+
+    // Prescription Management
+    Route::get('/doctor/appointment/{id}/prescription/create', [DoctorController::class, 'createPrescription'])->name('doctor.prescription.create');
+    Route::post('/doctor/appointment/{id}/prescription', [DoctorController::class, 'storePrescription'])->name('doctor.prescription.store');
+    Route::get('/doctor/prescription/{id}/edit', [DoctorController::class, 'editPrescription'])->name('doctor.prescription.edit');
+    Route::post('/doctor/prescription/{id}/update', [DoctorController::class, 'updatePrescription'])->name('doctor.prescription.update');
+    Route::get('/doctor/prescription/{id}', [DoctorController::class, 'viewPrescription'])->name('doctor.prescription.view');
 
     // Manage Time Slots (CRUD operation forms)
     Route::get('/doctor/time-slots', [DoctorController::class, 'timeSlots'])->name('doctor.time_slots');

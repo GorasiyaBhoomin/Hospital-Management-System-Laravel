@@ -65,4 +65,12 @@ class Doctors extends Model implements AuthenticatableContract
     {
         return $this->hasMany(appointment::class, 'username', 'username');
     }
+
+    /**
+     * Relationship: Doctor's Prescriptions
+     */
+    public function prescriptions()
+    {
+        return $this->hasMany(Prescription::class, 'doctor_id');
+    }
 }

@@ -132,20 +132,22 @@ autoplaySpeed: 800,
 
 // for filter
   // init Isotope
-  var $grid = $('.grid').isotope({
-    itemSelector: '.grid-item',
-    percentPosition: true,
-    masonry: {
-      // use outer width of grid-sizer for columnWidth
-      columnWidth: 1
-    }
-  });
+  if (typeof $.fn.isotope !== 'undefined' && $('.grid').length) {
+    var $grid = $('.grid').isotope({
+      itemSelector: '.grid-item',
+      percentPosition: true,
+      masonry: {
+        // use outer width of grid-sizer for columnWidth
+        columnWidth: 1
+      }
+    });
 
-  // filter items on button click
-  $('.portfolio-menu').on('click', 'button', function () {
-    var filterValue = $(this).attr('data-filter');
-    $grid.isotope({ filter: filterValue });
-  });
+    // filter items on button click
+    $('.portfolio-menu').on('click', 'button', function () {
+      var filterValue = $(this).attr('data-filter');
+      $grid.isotope({ filter: filterValue });
+    });
+  }
 
   //for menu active class
   $('.portfolio-menu button').on('click', function (event) {
@@ -158,55 +160,63 @@ autoplaySpeed: 800,
   new WOW().init();
 
   // counter 
-  $('.counter').counterUp({
-    delay: 10,
-    time: 10000
+  if (typeof $.fn.counterUp !== 'undefined' && $('.counter').length) {
+    $('.counter').counterUp({
+      delay: 10,
+      time: 10000
+    });
+  }
+
+/* magnificPopup img view */
+if (typeof $.fn.magnificPopup !== 'undefined') {
+  $('.popup-image').magnificPopup({
+	type: 'image',
+	gallery: {
+	  enabled: true
+	}
   });
 
-/* magnificPopup img view */
-$('.popup-image').magnificPopup({
+  /* magnificPopup img view */
+  $('.img-pop-up').magnificPopup({
 	type: 'image',
 	gallery: {
 	  enabled: true
 	}
-});
+  });
 
-/* magnificPopup img view */
-$('.img-pop-up').magnificPopup({
-	type: 'image',
-	gallery: {
-	  enabled: true
-	}
-});
-
-/* magnificPopup video view */
-$('.popup-video').magnificPopup({
+  /* magnificPopup video view */
+  $('.popup-video').magnificPopup({
 	type: 'iframe'
-});
+  });
+}
 
 
   // scrollIt for smoth scroll
-  $.scrollIt({
-    upKey: 38,             // key code to navigate to the next section
-    downKey: 40,           // key code to navigate to the previous section
-    easing: 'linear',      // the easing function for animation
-    scrollTime: 600,       // how long (in ms) the animation takes
-    activeClass: 'active', // class given to the active nav element
-    onPageChange: null,    // function(pageIndex) that is called when page is changed
-    topOffset: 0           // offste (in px) for fixed top navigation
-  });
+  if (typeof $.scrollIt !== 'undefined') {
+    $.scrollIt({
+      upKey: 38,             // key code to navigate to the next section
+      downKey: 40,           // key code to navigate to the previous section
+      easing: 'linear',      // the easing function for animation
+      scrollTime: 600,       // how long (in ms) the animation takes
+      activeClass: 'active', // class given to the active nav element
+      onPageChange: null,    // function(pageIndex) that is called when page is changed
+      topOffset: 0           // offste (in px) for fixed top navigation
+    });
+  }
 
   // scrollup bottom to top
-  $.scrollUp({
-    scrollName: 'scrollUp', // Element ID
-    topDistance: '4500', // Distance from top before showing element (px)
-    topSpeed: 300, // Speed back to top (ms)
-    animation: 'fade', // Fade, slide, none
-    animationInSpeed: 200, // Animation in speed (ms)
-    animationOutSpeed: 200, // Animation out speed (ms)
-    scrollText: '<i class="fa fa-angle-double-up"></i>', // Text for element
-    activeOverlay: false, // Set CSS color to display scrollUp active point, e.g '#00FFFF'
-  });
+  if (typeof $.scrollUp !== 'undefined') {
+    $.scrollUp({
+      scrollName: 'scrollUp', // Element ID
+      topDistance: '4500', // Distance from top before showing element (px)
+      topSpeed: 300, // Speed back to top (ms)
+      animation: 'fade', // Fade, slide, none
+      animationInSpeed: 200, // Animation in speed (ms)
+      animationOutSpeed: 200, // Animation out speed (ms)
+      scrollText: '<i class="fa fa-angle-double-up"></i>', // Text for element
+      activeOverlay: false, // Set CSS color to display scrollUp active point, e.g '#00FFFF'
+    });
+  }
 
 
   // blog-page
@@ -311,30 +321,34 @@ dots:false,
 
 // resitration_Form
 $(document).ready(function() {
-	$('.popup-with-form').magnificPopup({
-		type: 'inline',
-		preloader: false,
-		focus: '#name',
+	if (typeof $.fn.magnificPopup !== 'undefined' && $('.popup-with-form').length) {
+		$('.popup-with-form').magnificPopup({
+			type: 'inline',
+			preloader: false,
+			focus: '#name',
 
-		// When elemened is focused, some mobile browsers in some cases zoom in
-		// It looks not nice, so we disable it:
-		callbacks: {
-			beforeOpen: function() {
-				if($(window).width() < 700) {
-					this.st.focus = false;
-				} else {
-					this.st.focus = '#name';
+			// When elemened is focused, some mobile browsers in some cases zoom in
+			// It looks not nice, so we disable it:
+			callbacks: {
+				beforeOpen: function() {
+					if($(window).width() < 700) {
+						this.st.focus = false;
+					} else {
+						this.st.focus = '#name';
+					}
 				}
 			}
-		}
-	});
+		});
+	}
 });
 
 
 
 //------- Mailchimp js --------//  
 function mailChimp() {
-  $('#mc_embed_signup').find('form').ajaxChimp();
+  if (typeof $.fn.ajaxChimp !== 'undefined') {
+    $('#mc_embed_signup').find('form').ajaxChimp();
+  }
 }
 mailChimp();
 

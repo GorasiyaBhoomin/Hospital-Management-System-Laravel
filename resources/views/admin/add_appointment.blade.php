@@ -290,7 +290,15 @@
                             $('#adminDocRoom').val(res.doctor.room_no || 'Central OPD');
                             $('#adminDoctorScheduleNotice').show();
 
-                            if (res.is_day_off) {
+                            if (!res.is_available) {
+                                var docDisp = (res.doctor && res.doctor.name) ? res.doctor.name : 'Doctor';
+                                $('#adminScheduleNoticeBox').css({'background': '#fef2f2', 'border-color': '#fecaca'});
+                                $('#adminDocDutyBadge').removeClass().addClass('badge badge-danger text-white').css('background', '#dc2626').text('Off-Duty (Out of Office)');
+                                $('#adminDocDetails').html('<span class="text-danger font-weight-bold"><i class="fa fa-ban mr-1"></i> Doctor Notice:</span> ' + docDisp + ' is currently marked <strong>Off-Duty (Out of Office)</strong>. Appointment slots are paused.');
+                                $('#adminSlotHint').text('Doctor is marked Off-Duty.');
+                                $('#time_slot').html('<option value="" disabled selected>-- ' + docDisp + ' is currently Off-Duty (Out of Office) --</option>');
+                                return;
+                            } else if (res.is_day_off) {
                                 $('#adminScheduleNoticeBox').css({'background': '#fef2f2', 'border-color': '#fecaca'});
                                 $('#adminDocDutyBadge').removeClass().addClass('badge badge-danger text-white').css('background', '#dc2626').text('Off-Duty (' + res.schedule_notes + ')');
                                 $('#adminDocDetails').html('<strong>Notice:</strong> Doctor has weekly off on <strong>' + res.day + 's</strong>. Consultation may be rescheduled or confirmed as emergency.');

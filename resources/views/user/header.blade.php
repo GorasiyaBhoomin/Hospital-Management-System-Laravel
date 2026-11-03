@@ -117,12 +117,8 @@
 
                         <div class="dropdown-divider my-1"></div>
 
-                        <a class="dropdown-item compact-drop-link" href="{{ url('/') }}">
-                            <i class="fa fa-globe text-secondary"></i> Hospital Main Website
-                        </a>
-                        <a class="dropdown-item compact-drop-link" href="{{ url('/doctor/login') }}">
-                            <i class="fa fa-user-md text-info"></i> Doctor Clinical Portal
-                        </a>
+                      
+                        
 
                         <div class="dropdown-divider my-1"></div>
 

@@ -32,4 +32,9 @@ class appointment extends Model
     {
         return $this->belongsTo(User::class, 'user_id');
     }
+
+    public function prescription()
+    {
+        return $this->hasOne(Prescription::class, 'appointment_id');
+    }
 }

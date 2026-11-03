@@ -74,7 +74,7 @@
         border: none !important;
         font-size: 12px !important;
         font-weight: 700 !important;
-        padding: 6px 14px !important;
+        padding: 7px 14px !important;
         border-radius: 50px !important;
         display: inline-flex !important;
         align-items: center !important;
@@ -93,26 +93,53 @@
     }
 
     .btn-action-view-slip {
-        background: #fbf5fa !important;
-        color: #69275c !important;
-        border: 1.5px solid #ebdbe8 !important;
+        background: linear-gradient(135deg, #69275c 0%, #8b1d6b 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
         font-size: 12px !important;
         font-weight: 700 !important;
-        padding: 6px 14px !important;
+        padding: 7px 16px !important;
+        border-radius: 50px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        cursor: pointer !important;
+        text-decoration: none !important;
+        box-shadow: 0 2px 8px rgba(105, 39, 92, 0.25) !important;
+        transition: all 0.18s ease !important;
+        white-space: nowrap !important;
+    }
+
+    .btn-action-view-slip:hover {
+        background: linear-gradient(135deg, #501b45 0%, #69275c 100%) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(105, 39, 92, 0.35) !important;
+        color: #ffffff !important;
+    }
+
+    .btn-action-preview {
+        background: #f0f9ff !important;
+        color: #0284c7 !important;
+        border: 1px solid #bae6fd !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        padding: 7px 13px !important;
         border-radius: 50px !important;
         display: inline-flex !important;
         align-items: center !important;
         gap: 5px !important;
         cursor: pointer !important;
         text-decoration: none !important;
+        box-shadow: 0 1px 4px rgba(2, 132, 199, 0.1) !important;
         transition: all 0.18s ease !important;
         white-space: nowrap !important;
     }
 
-    .btn-action-view-slip:hover {
-        background: #69275c !important;
+    .btn-action-preview:hover {
+        background: #0284c7 !important;
         color: #ffffff !important;
-        border-color: #69275c !important;
+        border-color: #0284c7 !important;
+        transform: translateY(-1px) !important;
     }
 
     .btn-action-cancel {
@@ -138,32 +165,393 @@
     }
 
     .btn-action-ext {
-        background: #f8fafc !important;
-        color: #64748b !important;
-        border: 1px solid #e2e8f0 !important;
+        background: #f0f9ff !important;
+        color: #0284c7 !important;
+        border: 1px solid #bae6fd !important;
         font-size: 12px !important;
+        font-weight: 700 !important;
         padding: 6px 10px !important;
         border-radius: 50px !important;
         display: inline-flex !important;
         align-items: center !important;
+        justify-content: center !important;
         text-decoration: none !important;
+        transition: all 0.18s ease !important;
     }
 
     .btn-action-ext:hover {
-        color: #0284c7 !important;
+        background: #0284c7 !important;
+        color: #ffffff !important;
         border-color: #0284c7 !important;
     }
 
-    /* Modal Max Height Fix so buttons NEVER get cut off */
-    .opd-modal-dialog {
-        max-width: 720px;
-        margin: 1.5rem auto;
+    /* ==========================================================================
+       MODERN ULTRA-RESPONSIVE OPD SLIP MODAL (BOOTSTRAP 4.0 COMPATIBLE)
+       Guarantees header and footer are NEVER cut off and middle scrolls smoothly
+       ========================================================================== */
+    .modal {
+        z-index: 1050000 !important;
     }
 
-    @media (max-height: 800px) {
+    .modal-backdrop {
+        z-index: 1040000 !important;
+    }
+
+    .modal-backdrop.show {
+        opacity: 0.65;
+        backdrop-filter: blur(5px);
+        -webkit-backdrop-filter: blur(5px);
+    }
+
+    .opd-modal-dialog {
+        max-width: 900px !important;
+        width: 95% !important;
+        margin: 15px auto !important;
+    }
+
+    .opd-modal-content {
+        background: #ffffff !important;
+        border-radius: 16px !important;
+        border: none !important;
+        box-shadow: 0 25px 60px -10px rgba(15, 23, 42, 0.45) !important;
+        display: flex !important;
+        flex-direction: column !important;
+        max-height: 94vh !important;
+        height: 94vh !important;
+        overflow: hidden !important;
+        position: relative !important;
+    }
+
+    @media (max-width: 768px) {
         .opd-modal-dialog {
-            margin: 0.5rem auto;
+            width: 98% !important;
+            margin: 8px auto !important;
         }
+        .opd-modal-content {
+            max-height: 96vh !important;
+            height: 96vh !important;
+            border-radius: 12px !important;
+        }
+    }
+
+    /* Fixed Top Header */
+    .opd-modal-header {
+        flex-shrink: 0;
+        background: #ffffff;
+        border-bottom: 1.5px solid #e2e8f0;
+        padding: 12px 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        z-index: 10;
+    }
+
+    /* Scrollable Document Body */
+    .opd-modal-body {
+        flex: 1 1 auto;
+        overflow-y: auto !important;
+        overflow-x: hidden !important;
+        padding: 0 !important;
+        background: #ffffff !important;
+        -webkit-overflow-scrolling: touch;
+    }
+
+    /* Custom Sleek Scrollbar */
+    .opd-modal-body::-webkit-scrollbar {
+        width: 7px;
+    }
+    .opd-modal-body::-webkit-scrollbar-track {
+        background: #f1f5f9;
+        border-radius: 6px;
+    }
+    .opd-modal-body::-webkit-scrollbar-thumb {
+        background: #cbd5e1;
+        border-radius: 6px;
+    }
+    .opd-modal-body::-webkit-scrollbar-thumb:hover {
+        background: #94a3b8;
+    }
+
+    /* Fixed Bottom Footer */
+    .opd-modal-footer {
+        flex-shrink: 0;
+        background: #ffffff;
+        border-top: 1.5px solid #e2e8f0;
+        padding: 10px 22px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        z-index: 10;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    /* Document Paper Container */
+    .opd-modal-paper {
+        background: #ffffff;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        overflow: hidden;
+    }
+
+    /* Toolbar Action Buttons */
+    .btn-opd-action {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 7px 15px;
+        border-radius: 50px;
+        font-size: 12.5px;
+        font-weight: 700;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        text-decoration: none !important;
+        border: none;
+        line-height: 1.4;
+    }
+
+    .btn-opd-pdf {
+        background: linear-gradient(135deg, #059669 0%, #10b981 100%);
+        color: #ffffff !important;
+        box-shadow: 0 2px 8px rgba(16, 185, 129, 0.25);
+    }
+    .btn-opd-pdf:hover {
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(16, 185, 129, 0.35);
+        color: #ffffff !important;
+    }
+
+    .btn-opd-print {
+        background: #69275c;
+        color: #ffffff !important;
+        box-shadow: 0 2px 8px rgba(105, 39, 92, 0.25);
+    }
+    .btn-opd-print:hover {
+        background: #501b45;
+        transform: translateY(-1px);
+        box-shadow: 0 4px 12px rgba(105, 39, 92, 0.35);
+        color: #ffffff !important;
+    }
+
+    .btn-opd-full {
+        background: #f0f9ff;
+        color: #0284c7 !important;
+        border: 1.5px solid #bae6fd !important;
+    }
+    .btn-opd-full:hover {
+        background: #0284c7;
+        color: #ffffff !important;
+        border-color: #0284c7 !important;
+    }
+
+    .btn-opd-close {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        border: 1.5px solid #cbd5e1;
+        background: #f8fafc;
+        color: #334155;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        cursor: pointer !important;
+        font-size: 16px;
+        font-weight: 800;
+        transition: all 0.2s ease;
+        outline: none;
+        z-index: 1000;
+        position: relative;
+    }
+    .btn-opd-close:hover {
+        background: #fee2e2;
+        color: #dc2626;
+        border-color: #fca5a5;
+        transform: scale(1.08);
+    }
+
+    .opd-header-badge {
+        background: #fbf5fa;
+        color: #69275c;
+        border: 1px solid #ebdbe8;
+        font-size: 12px;
+        font-weight: 700;
+        padding: 5px 12px;
+        border-radius: 50px;
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .opd-header-token {
+        font-family: monospace;
+        font-weight: 800;
+        color: #0f172a;
+        font-size: 14.5px;
+        letter-spacing: 0.5px;
+    }
+
+    /* Modal Slip Header */
+    .modal-slip-header {
+        background: linear-gradient(135deg, #69275c 0%, #4a1540 100%);
+        color: #ffffff;
+        padding: 22px 28px;
+        border-bottom: 3px solid #00a896;
+    }
+    .modal-hospital-title {
+        color: #ffffff;
+        font-weight: 800;
+        margin: 0 0 3px;
+        font-size: 19px;
+        letter-spacing: 0.3px;
+    }
+    .modal-hospital-sub {
+        font-size: 12px;
+        color: #e2e8f0;
+        display: block;
+        margin-bottom: 4px;
+    }
+    .modal-hospital-meta {
+        font-size: 11px;
+        color: #cbd5e1;
+        line-height: 1.5;
+    }
+    .modal-logo-badge {
+        background: #ffffff;
+        padding: 5px 12px;
+        border-radius: 8px;
+        display: inline-block;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+    }
+
+    .modal-token-bar {
+        background: #f8fafc;
+        border-bottom: 1.5px dashed #cbd5e1;
+        padding: 12px 28px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+    .modal-bar-label {
+        font-size: 10px;
+        font-weight: 800;
+        text-transform: uppercase;
+        color: #64748b;
+        display: block;
+        margin-bottom: 2px;
+    }
+    .modal-token-val {
+        color: #69275c;
+        font-family: monospace;
+        font-size: 20px;
+        letter-spacing: 0.5px;
+    }
+    .modal-barcode-box {
+        font-family: monospace;
+        font-size: 15px;
+        letter-spacing: 5px;
+        color: #334155;
+        background: #e2e8f0;
+        padding: 4px 12px;
+        border-radius: 4px;
+        display: inline-block;
+    }
+    .modal-slip-content {
+        padding: 18px 24px 22px;
+        background: #ffffff;
+    }
+
+    /* Slip Structured Field Boxes */
+    .slip-section-heading {
+        font-size: 12.5px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.8px;
+        color: #69275c;
+        border-bottom: 1.5px solid #f1f5f9;
+        padding-bottom: 5px;
+        margin-bottom: 12px;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    .slip-field-box {
+        background: #f8fafc;
+        border: 1px solid #e2e8f0;
+        border-radius: 9px;
+        padding: 9px 12px;
+        height: 100%;
+    }
+    .slip-field-label {
+        font-size: 10px;
+        font-weight: 700;
+        text-transform: uppercase;
+        color: #64748b;
+        letter-spacing: 0.4px;
+        margin-bottom: 2px;
+        display: block;
+    }
+    .slip-field-value {
+        font-size: 13px;
+        font-weight: 700;
+        color: #0f172a;
+        margin: 0;
+        word-break: break-word;
+    }
+    .slip-field-highlight {
+        color: #69275c;
+        font-size: 14.5px;
+    }
+    .slip-consultation-card {
+        background: linear-gradient(135deg, #fbf5fa 0%, #f0fdf4 100%);
+        border: 1.5px solid #ebdbe8;
+        border-radius: 11px;
+        padding: 14px 18px;
+    }
+    .slip-symptoms-box {
+        background: #fafafa;
+        border: 1px dashed #cbd5e1;
+        border-radius: 10px;
+        padding: 12px 16px;
+    }
+    .slip-auth-footer {
+        border-top: 1.5px solid #e2e8f0;
+        padding: 18px 24px;
+        background: #ffffff;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        flex-wrap: wrap;
+        gap: 16px;
+    }
+    .slip-seal-stamp {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        border: 2px dashed #059669;
+        color: #059669;
+        padding: 5px 14px;
+        border-radius: 8px;
+        font-size: 11px;
+        font-weight: 800;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
+        background: #ecfdf5;
+    }
+    .slip-signatory {
+        text-align: right;
+    }
+    .slip-sign-title {
+        font-size: 12px;
+        font-weight: 700;
+        color: #0f172a;
+        margin-bottom: 2px;
+    }
+    .slip-sign-sub {
+        font-size: 11px;
+        color: #64748b;
     }
 </style>
 @endpush
@@ -232,7 +620,7 @@
                             <th style="padding: 14px 20px; font-weight: 800; color: #0f172a;">Doctor & Speciality</th>
                             <th style="padding: 14px 20px; font-weight: 800; color: #0f172a;">Allotted Date & Time</th>
                             <th style="padding: 14px 20px; font-weight: 800; color: #0f172a; width: 140px;">Status</th>
-                            <th style="padding: 14px 20px; font-weight: 800; color: #0f172a; text-align: right; width: 280px;">Actions</th>
+                            <th style="padding: 14px 20px; font-weight: 800; color: #0f172a; text-align: right; width: 320px; white-space: nowrap;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -273,7 +661,7 @@
                                 <td style="padding: 16px 20px; vertical-align: middle;">
                                     @if($statusSlug == 'approved' || $statusSlug == 'confirmed')
                                         <span class="badge badge-pill" style="background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 5px 12px; font-size: 12px; font-weight: 700;">
-                                            <i class="fa fa-check-circle"></i> Confirmed
+                                             <i class="fa fa-check-circle"></i> Confirmed
                                         </span>
                                     @elseif($statusSlug == 'cancelled')
                                         <span class="badge badge-pill" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 5px 12px; font-size: 12px; font-weight: 700;">
@@ -290,8 +678,16 @@
                                     @endif
                                 </td>
 
-                                <td style="padding: 16px 20px; vertical-align: middle; text-align: right;">
-                                    <div class="d-inline-flex align-items-center gap-2">
+                                <td style="padding: 14px 20px; vertical-align: middle; text-align: right; white-space: nowrap;">
+                                    <div class="d-inline-flex align-items-center" style="gap: 6px;">
+                                        <!-- Primary Action: View Slip (Dedicated Full Official Voucher Page) -->
+                                        <a href="{{ url('/user/appointment/' . $apt->id . '/slip') }}" class="btn-action-view-slip" title="View Official OPD Slip Full Screen">
+                                            <i class="fa fa-file-text-o"></i> View Slip
+                                        </a>
+
+                                        <!-- Quick Modal Lightbox Preview -->
+                                       
+
                                         <!-- 1-Click Direct Download PDF Button -->
                                         <button type="button" class="btn-action-download-pdf"
                                                 data-id="{{ $apt->id }}"
@@ -313,33 +709,6 @@
                                                 title="Instant 1-Click PDF Download">
                                             <i class="fa fa-download"></i> PDF
                                         </button>
-
-                                        <!-- View Slip Modal Trigger Button -->
-                                        <button type="button" class="btn-action-view-slip"
-                                                data-id="{{ $apt->id }}"
-                                                data-token="{{ $tokenRef }}"
-                                                data-name="{{ $patientName }}"
-                                                data-uhid="{{ $uhidRef }}"
-                                                data-email="{{ $apt->email ?: Auth::user()->email }}"
-                                                data-phone="{{ $apt->phone ?: (Auth::user()->phone ?: 'N/A') }}"
-                                                data-gender="{{ ucfirst($apt->gender ?: 'N/A') }}"
-                                                data-doctor="{{ $doctorName }}"
-                                                data-dept="{{ $deptName }}"
-                                                data-date="{{ $formattedDate }}"
-                                                data-time="{{ $apt->time }}"
-                                                data-room="{{ $roomNo }}"
-                                                data-status="{{ $apt->Status ?: 'Pending' }}"
-                                                data-reason="{{ $reasonText }}"
-                                                data-slip-url="{{ url('/user/appointment/' . $apt->id . '/slip') }}"
-                                                onclick="openSlipModal(this)"
-                                                title="View Online Voucher">
-                                            <i class="fa fa-eye"></i> View Slip
-                                        </button>
-
-                                        <!-- Standalone Full Slip Page -->
-                                        <a href="{{ url('/user/appointment/' . $apt->id . '/slip') }}" target="_blank" class="btn-action-ext" title="Open Full Page Voucher in New Tab">
-                                            <i class="fa fa-external-link"></i>
-                                        </a>
 
                                         <!-- Cancel Action -->
                                         @if($statusSlug != 'cancelled' && $statusSlug != 'completed')
@@ -374,192 +743,229 @@
     </div>
 
     <!-- ===================================================================
-         DIGITAL OPD TOKEN SLIP MODAL (SCROLLABLE & NEVER CUT OFF)
+         DIGITAL OPD TOKEN SLIP LIGHTBOX MODAL
+         Features: Pinned eye-level headers/footers, responsive scrolling,
+         full A4 document proportions, and instant 1-click tools.
          =================================================================== -->
     <div class="modal fade" id="slipModal" tabindex="-1" role="dialog" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-scrollable opd-modal-dialog" role="document">
-            <div class="modal-content rounded-4 border-0 shadow-lg overflow-hidden">
+        <div class="modal-dialog opd-modal-dialog" role="document">
+            <div class="opd-modal-content">
                 
-                <!-- TOP HEADER WITH VISIBLE ACTION BUTTONS (ALWAYS VISIBLE AT EYE LEVEL) -->
-                <div class="modal-header bg-white border-bottom py-2 px-3 d-flex align-items-center justify-content-between">
+                <!-- TOP HEADER: PINNED AT EYE-LEVEL -->
+                <div class="opd-modal-header">
                     <div class="d-flex align-items-center gap-2">
-                        <span class="badge badge-pill badge-primary" style="background: #fbf5fa; color: #69275c; border: 1px solid #ebdbe8; font-size: 12px; padding: 5px 12px;">
-                            <i class="fa fa-file-text-o"></i> Digital OPD Token
+                        <span class="opd-header-badge">
+                            <i class="fa fa-file-text-o"></i> Digital OPD Token Voucher
                         </span>
-                        <span id="topModalToken" style="font-family: monospace; font-weight: 800; color: #0f172a; font-size: 14px;">#KKP-00000</span>
+                        <span id="topModalToken" class="opd-header-token">#KKP-00000</span>
                     </div>
 
                     <!-- Direct Action Buttons at Top -->
                     <div class="d-flex align-items-center gap-2">
                         <!-- Download PDF Button Top -->
-                        <button type="button" class="btn btn-sm btn-success rounded-pill font-weight-bold px-3" id="topPdfBtn" onclick="downloadModalSlipPdf()" style="font-size: 12.5px; background: #059669; border: none;">
-                            <i class="fa fa-download"></i> Download PDF
+                        <button type="button" class="btn-opd-action btn-opd-pdf" id="topPdfBtn" onclick="downloadModalSlipPdf()" title="Download Official PDF">
+                            <i class="fa fa-download"></i> <span class="d-none d-sm-inline">Download</span> PDF
                         </button>
 
                         <!-- Print Button Top -->
-                        <button type="button" class="btn btn-sm btn-light rounded-pill font-weight-bold px-3 border" onclick="printModalSlip()" style="font-size: 12.5px;">
-                            <i class="fa fa-print"></i> Print
+                        <button type="button" class="btn-opd-action btn-opd-print" onclick="printModalSlip()" title="Print OPD Voucher">
+                            <i class="fa fa-print"></i> <span class="d-none d-sm-inline">Print</span>
                         </button>
 
+                        <!-- Open Full Page Voucher Top -->
+                        <a href="#" id="topModalSlipFullView" target="_blank" class="btn-opd-action btn-opd-full" title="Open Full Page Voucher in New Tab">
+                            <i class="fa fa-external-link"></i> <span class="d-none d-md-inline">Full Page</span>
+                        </a>
+
                         <!-- Close (X) -->
-                        <button type="button" class="close ml-2" data-dismiss="modal" aria-label="Close" style="font-size: 24px; line-height: 1; outline: none;">
-                            <span aria-hidden="true">&times;</span>
+                        <button type="button" class="btn-opd-close ml-1" onclick="closeSlipModal()" data-dismiss="modal" aria-label="Close" title="Close Slip">
+                            <i class="fa fa-times" style="pointer-events: none;"></i>
                         </button>
                     </div>
                 </div>
 
-                <!-- Printable Slip Document Scrollable Body Area -->
-                <div class="modal-body p-0">
-                    <div id="printableSlipArea">
-                        <!-- Slip Header -->
-                        <div style="background: linear-gradient(135deg, #69275c 0%, #4a1540 100%); color: #ffffff; padding: 20px 24px; border-bottom: 3px solid #00a896;">
-                            <div class="d-flex align-items-center justify-content-between">
-                                <div>
-                                    <h4 style="color: #ffffff; font-weight: 800; margin: 0; font-size: 17px; letter-spacing: 0.3px;">
+                <!-- Printable Slip Document Body (Scrolls seamlessly inside modal) -->
+                <div class="opd-modal-body">
+                    <div class="opd-modal-paper" id="printableSlipArea">
+                        
+                        <!-- 1. Hospital Branding Header Strip -->
+                        <div class="modal-slip-header">
+                            <div class="d-flex align-items-center justify-content-between" style="gap: 16px;">
+                                <div style="flex: 1; min-width: 0;">
+                                    <h4 class="modal-hospital-title">
                                         KK PATEL SUPER SPECIALITY HOSPITAL
                                     </h4>
-                                    <span style="font-size: 11px; color: #e2e8f0; display: block; margin-top: 2px;">
+                                    <span class="modal-hospital-sub">
                                         Managed by Shree Kutchi Leva Patel Kanya Kelavani Mandal
                                     </span>
-                                    <small style="font-size: 10.5px; color: #cbd5e1; display: block; margin-top: 4px;">
-                                        Bhuj - Mirzapar Highway, Bhuj, Kutch, Gujarat 370001 &bull; Helpline: 02832 232233
-                                    </small>
-                                </div>
-                                <div class="text-right">
-                                    <div style="background: #ffffff; padding: 4px 8px; border-radius: 6px; display: inline-block;">
-                                        <img src="{{ URL::to('/') }}/img/logo2.png" alt="Hospital Logo" style="height: 28px;">
+                                    <div class="modal-hospital-meta">
+                                        <i class="fa fa-map-marker"></i> Bhuj - Mirzapar Highway, Bhuj, Kutch, Gujarat 370001 &bull; 
+                                        <i class="fa fa-phone"></i> Helpline: 02832 232233 &bull; 
+                                        <i class="fa fa-ambulance"></i> Emergency: 02832 236000
                                     </div>
-                                    <span class="badge badge-pill badge-success d-block mt-1" style="font-size: 9.5px; font-weight: 800;">
+                                </div>
+                                <div class="text-right" style="flex-shrink: 0;">
+                                    <div class="modal-logo-badge">
+                                        <img src="{{ URL::to('/') }}/img/logo2.png" alt="Hospital Logo" style="height: 38px; max-width: 140px; object-fit: contain;">
+                                    </div>
+                                    <span class="badge badge-pill badge-success d-block mt-2 font-weight-bold" style="font-size: 10px; padding: 4px 10px; letter-spacing: 0.5px;">
                                         <i class="fa fa-shield"></i> NABH ACCREDITED
                                     </span>
                                 </div>
                             </div>
                         </div>
 
-                        <!-- Token Reference & Status Bar -->
-                        <div style="background: #f8fafc; border-bottom: 1.5px dashed #cbd5e1; padding: 10px 24px; display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                        <!-- 2. Token Reference & Status Bar -->
+                        <div class="modal-token-bar">
                             <div>
-                                <span class="text-muted text-uppercase" style="font-size: 9.5px; font-weight: 800; display: block;">DIGITAL OPD TOKEN #</span>
-                                <strong id="modalTokenRef" style="color: #69275c; font-family: monospace; font-size: 18px; letter-spacing: 0.5px;">#KKP-00000</strong>
+                                <span class="modal-bar-label">DIGITAL OPD TOKEN NUMBER</span>
+                                <strong id="modalTokenRef" class="modal-token-val">#KKP-00000</strong>
                             </div>
                             <div class="text-center d-none d-sm-block">
-                                <span class="text-muted text-uppercase" style="font-size: 9.5px; font-weight: 800; display: block;">AUTHENTICATION BARCODE</span>
-                                <span style="font-family: monospace; font-size: 14px; letter-spacing: 4px; color: #334155; background: #e2e8f0; padding: 2px 8px; border-radius: 4px;">||| | || |||| | ||</span>
+                                <span class="modal-bar-label">AUTHENTICATION BARCODE</span>
+                                <span class="modal-barcode-box">||| | || |||| | ||| ||</span>
                             </div>
                             <div class="text-right">
-                                <span class="text-muted text-uppercase" style="font-size: 9.5px; font-weight: 800; display: block;">STATUS</span>
-                                <span id="modalStatusBadge" class="badge badge-pill badge-success" style="padding: 4px 10px; font-size: 11.5px; font-weight: 700;">
+                                <span class="modal-bar-label">CONSULTATION STATUS</span>
+                                <span id="modalStatusBadge" class="badge badge-pill badge-success" style="padding: 5px 12px; font-size: 12px; font-weight: 700;">
                                     CONFIRMED
                                 </span>
                             </div>
                         </div>
 
-                        <!-- Slip Body Details -->
-                        <div style="padding: 20px 24px; background: #ffffff;">
+                        <!-- 3. Slip Content Body -->
+                        <div class="modal-slip-content">
                             
-                            <!-- 1. Patient Details -->
-                            <div class="mb-3">
-                                <div class="text-uppercase font-weight-bold mb-2" style="font-size: 11px; color: #69275c; letter-spacing: 0.5px; border-bottom: 1px solid #f1f5f9; padding-bottom: 3px;">
-                                    <i class="fa fa-user-circle text-primary"></i> 1. Patient Identification Details
+                            <!-- 1. Patient Identification Details -->
+                            <div class="slip-section-heading">
+                                <i class="fa fa-user-circle"></i> 1. Patient Identification Details
+                            </div>
+                            <div class="row mb-3">
+                                <div class="col-12 col-sm-4 mb-2">
+                                    <div class="slip-field-box">
+                                        <span class="slip-field-label">Patient Name</span>
+                                        <strong id="modalPatientName" class="slip-field-value slip-field-highlight">-</strong>
+                                    </div>
                                 </div>
-                                <div class="row">
-                                    <div class="col-12 col-sm-4 mb-2">
-                                        <small class="text-muted d-block text-uppercase" style="font-size: 10px; font-weight: 700;">Patient Name</small>
-                                        <strong id="modalPatientName" style="font-size: 14px; color: #0f172a;">-</strong>
+                                <div class="col-6 col-sm-4 mb-2">
+                                    <div class="slip-field-box">
+                                        <span class="slip-field-label">Patient UHID</span>
+                                        <strong id="modalPatientUhid" class="slip-field-value" style="color: #0284c7; font-family: monospace;">-</strong>
                                     </div>
-                                    <div class="col-6 col-sm-4 mb-2">
-                                        <small class="text-muted d-block text-uppercase" style="font-size: 10px; font-weight: 700;">Patient UHID</small>
-                                        <strong id="modalPatientUhid" style="font-size: 13px; color: #0284c7; font-family: monospace;">-</strong>
+                                </div>
+                                <div class="col-6 col-sm-4 mb-2">
+                                    <div class="slip-field-box">
+                                        <span class="slip-field-label">Mobile Number</span>
+                                        <strong id="modalPatientPhone" class="slip-field-value">-</strong>
                                     </div>
-                                    <div class="col-6 col-sm-4 mb-2">
-                                        <small class="text-muted d-block text-uppercase" style="font-size: 10px; font-weight: 700;">Mobile Number</small>
-                                        <strong id="modalPatientPhone" style="font-size: 13px; color: #0f172a;">-</strong>
+                                </div>
+                                <div class="col-12 col-sm-6 mb-2 mb-sm-0">
+                                    <div class="slip-field-box">
+                                        <span class="slip-field-label">Registered Email</span>
+                                        <span id="modalPatientEmail" class="slip-field-value" style="font-size: 13px; font-weight: 600;">-</span>
                                     </div>
-                                    <div class="col-8 col-sm-6">
-                                        <small class="text-muted d-block text-uppercase" style="font-size: 10px; font-weight: 700;">Registered Email</small>
-                                        <span id="modalPatientEmail" style="font-size: 12px; color: #475569;">-</span>
+                                </div>
+                                <div class="col-6 col-sm-3 mb-2 mb-sm-0">
+                                    <div class="slip-field-box">
+                                        <span class="slip-field-label">Gender</span>
+                                        <span id="modalPatientGender" class="slip-field-value font-weight-bold">-</span>
                                     </div>
-                                    <div class="col-4 col-sm-3">
-                                        <small class="text-muted d-block text-uppercase" style="font-size: 10px; font-weight: 700;">Gender</small>
-                                        <span id="modalPatientGender" style="font-size: 12.5px; font-weight: 700; color: #0f172a;">-</span>
-                                    </div>
-                                    <div class="col-12 col-sm-3">
-                                        <small class="text-muted d-block text-uppercase" style="font-size: 10px; font-weight: 700;">Category</small>
-                                        <span class="badge badge-pill badge-light text-success" style="font-size: 10.5px; font-weight: 700;">OPD Consultation</span>
+                                </div>
+                                <div class="col-6 col-sm-3 mb-2 mb-sm-0">
+                                    <div class="slip-field-box">
+                                        <span class="slip-field-label">Category</span>
+                                        <span class="badge badge-pill badge-light text-success font-weight-bold" style="font-size: 11px;">OPD Consultation</span>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- 2. Consultation Schedule -->
-                            <div class="mb-3" style="background: #fbf5fa; border: 1px solid #ebdbe8; border-radius: 10px; padding: 14px 16px;">
+                            <!-- 2. Consultation Schedule & Specialist Doctor -->
+                            <div class="slip-section-heading mt-4">
+                                <i class="fa fa-stethoscope"></i> 2. Consultation Schedule & Specialist Doctor
+                            </div>
+                            <div class="slip-consultation-card mb-3">
                                 <div class="row align-items-center">
-                                    <div class="col-12 col-md-6 mb-2 mb-md-0 border-right">
-                                        <small class="text-muted d-block text-uppercase" style="font-size: 10px; font-weight: 700;">Consultant Specialist Doctor</small>
-                                        <h5 id="modalDoctorName" style="color: #69275c; font-weight: 800; font-size: 15px; margin: 2px 0 4px;">-</h5>
-                                        <span id="modalDepartmentName" class="badge badge-pill badge-primary" style="background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; font-size: 11px; font-weight: 700;">-</span>
-                                        <span id="modalRoom" class="badge badge-pill badge-light ml-1" style="font-size: 10.5px; border: 1px solid #e2e8f0;">-</span>
+                                    <div class="col-12 col-md-6 mb-3 mb-md-0 border-right">
+                                        <span class="slip-field-label">Consultant Specialist Doctor</span>
+                                        <h5 id="modalDoctorName" style="color: #69275c; font-weight: 800; font-size: 17px; margin: 4px 0 8px;">-</h5>
+                                        <div class="d-flex align-items-center flex-wrap gap-2">
+                                            <span id="modalDepartmentName" class="badge badge-pill" style="background: #e0f2fe; color: #0284c7; border: 1px solid #bae6fd; font-size: 11.5px; font-weight: 700; padding: 4px 10px;">-</span>
+                                            <span id="modalRoom" class="badge badge-pill badge-light" style="font-size: 11px; border: 1px solid #cbd5e1; font-weight: 700; padding: 4px 10px;">-</span>
+                                        </div>
                                     </div>
-                                    <div class="col-12 col-md-6 pl-md-3">
-                                        <div class="mb-1">
-                                            <small class="text-muted d-block text-uppercase" style="font-size: 10px; font-weight: 700;">Allotted Date</small>
-                                            <strong id="modalDate" style="color: #0f172a; font-size: 13.5px;">-</strong>
+                                    <div class="col-12 col-md-6 pl-md-4">
+                                        <div class="mb-2">
+                                            <span class="slip-field-label">Allotted Consultation Date</span>
+                                            <strong id="modalDate" style="color: #0f172a; font-size: 14.5px;">-</strong>
                                         </div>
                                         <div>
-                                            <small class="text-muted d-block text-uppercase" style="font-size: 10px; font-weight: 700;">OPD Time Slot</small>
-                                            <strong id="modalTime" style="color: #059669; font-size: 13.5px;">-</strong>
+                                            <span class="slip-field-label">OPD Time Slot</span>
+                                            <strong id="modalTime" style="color: #059669; font-size: 15px; font-weight: 800;">-</strong>
                                         </div>
                                     </div>
                                 </div>
                             </div>
 
-                            <!-- 3. Symptoms / Notes -->
-                            <div class="mb-3">
-                                <small class="text-muted d-block text-uppercase" style="font-size: 10px; font-weight: 700;">Clinical Symptoms / Reason for Visit</small>
-                                <p id="modalReason" style="font-size: 12px; color: #334155; margin: 0; background: #fafafa; padding: 8px 12px; border-radius: 6px; border: 1px dashed #cbd5e1; line-height: 1.5;">-</p>
+                            <!-- 3. Symptoms / Reason for Visit -->
+                            <div class="slip-section-heading mt-4">
+                                <i class="fa fa-heartbeat"></i> 3. Clinical Symptoms / Chief Complaint
+                            </div>
+                            <div class="slip-symptoms-box mb-3">
+                                <p id="modalReason" style="font-size: 13px; color: #334155; margin: 0; line-height: 1.6;">-</p>
                             </div>
 
                             <!-- 4. Guidelines -->
-                            <div style="background: #f8fafc; padding: 10px 14px; border-radius: 8px; border: 1px solid #e2e8f0; font-size: 11px; color: #64748b; line-height: 1.5;">
-                                <strong>Instructions:</strong> Present this voucher at Central OPD 15 minutes prior to slot. Bring past medical files. PMJAY / Mediclaim cardholders report to Counter #4. Emergency Trauma: <strong>02832 236000</strong>.
+                            <div class="slip-section-heading mt-4">
+                                <i class="fa fa-info-circle"></i> 4. Important Patient Instructions
+                            </div>
+                            <div style="background: #f8fafc; padding: 14px 18px; border-radius: 10px; border: 1px solid #e2e8f0; font-size: 12px; color: #475569; line-height: 1.6;">
+                                <ul style="padding-left: 18px; margin: 0;">
+                                    <li>Please present this digital token or printed voucher at Central OPD Reception <strong>15 minutes prior</strong> to your scheduled slot.</li>
+                                    <li>Carry all prior medical investigation reports, laboratory tests, scans, and ongoing medication prescriptions.</li>
+                                    <li>PMJAY, Ayushman Bharat, or Mediclaim/TPA insurance cardholders should report directly to <strong>Counter #4</strong>.</li>
+                                    <li>For emergency assistance or trauma triage, contact the 24x7 Emergency Line: <strong>02832 236000</strong>.</li>
+                                </ul>
                             </div>
 
                             <!-- 5. Seal & Verification Footer -->
-                            <div class="d-flex align-items-center justify-content-between mt-3 pt-2 border-top">
-                                <div style="font-size: 10px; color: #059669; font-weight: 800; border: 1.5px dashed #059669; padding: 3px 8px; border-radius: 6px; background: #ecfdf5;">
-                                    <i class="fa fa-certificate"></i> VERIFIED DIGITAL OPD TOKEN
+                            <div class="slip-auth-footer mt-4">
+                                <div class="slip-seal-stamp">
+                                    <i class="fa fa-check-circle" style="font-size: 16px;"></i> VERIFIED DIGITAL OPD TOKEN
                                 </div>
-                                <div class="text-right">
-                                    <small class="text-muted d-block" style="font-size: 9.5px;">Authorized Registrar</small>
-                                    <strong style="font-size: 10.5px; color: #0f172a;">KK Patel Hospital, Bhuj</strong>
+                                <div class="slip-signatory">
+                                    <div id="modalSignDoctor" style="font-family: 'Brush Script MT', cursive, sans-serif; font-size: 20px; color: #1e293b; line-height: 1.2;">Dr. KK Patel</div>
+                                    <span class="slip-sign-title d-block">Attending Specialist Doctor</span>
+                                    <span class="slip-sign-sub">KK Patel Super Speciality Hospital, Bhuj</span>
                                 </div>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Modal Bottom Footer with Actions -->
-                <div class="modal-footer bg-light border-top py-2 px-3 d-flex justify-content-between align-items-center">
-                    <button type="button" class="btn btn-sm btn-light border rounded-pill px-3 font-weight-bold" data-dismiss="modal">
-                        Close
+                <!-- BOTTOM FOOTER: PINNED AT BOTTOM AT ALL TIMES -->
+                <div class="opd-modal-footer">
+                    <button type="button" class="btn btn-light border rounded-pill px-4 font-weight-bold" onclick="closeSlipModal()" data-dismiss="modal" style="font-size: 13px;">
+                        <i class="fa fa-times text-muted mr-1" style="pointer-events: none;"></i> Close
                     </button>
                     
                     <div class="d-flex align-items-center gap-2">
                         <!-- Open Full Page Voucher in New Tab -->
-                        <a href="#" id="modalSlipFullView" target="_blank" class="btn btn-sm btn-outline-info font-weight-bold rounded-pill px-3" style="font-size: 12px;">
+                        <a href="#" id="modalSlipFullView" target="_blank" class="btn-opd-action btn-opd-full" title="Open Full Page Voucher in New Tab">
                             <i class="fa fa-external-link"></i> Full Page Voucher
                         </a>
 
                         <!-- Download PDF Button Bottom -->
-                        <button type="button" class="btn btn-sm btn-success font-weight-bold rounded-pill px-3" id="bottomPdfBtn" onclick="downloadModalSlipPdf()" style="font-size: 12.5px; background: #059669; border: none;">
+                        <button type="button" class="btn-opd-action btn-opd-pdf" id="bottomPdfBtn" onclick="downloadModalSlipPdf()">
                             <i class="fa fa-download"></i> Download PDF
                         </button>
 
                         <!-- Print Slip Button Bottom -->
-                        <button type="button" class="btn btn-sm btn-primary font-weight-bold rounded-pill px-3" onclick="printModalSlip()" style="font-size: 12.5px; background: #69275c; border: none;">
+                        <button type="button" class="btn-opd-action btn-opd-print" onclick="printModalSlip()">
                             <i class="fa fa-print"></i> Print Slip
                         </button>
                     </div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -590,11 +996,48 @@
         });
     });
 
+    // Ensure modal is attached to document.body to prevent stacking context traps
+    $(function() {
+        if ($('#slipModal').length) {
+            $('#slipModal').appendTo('body');
+        }
+    });
+
     // Populate and Open Digital OPD Slip Modal with All Details
     function openSlipModal(btn) {
         populateModalData(btn);
-        $('#slipModal').modal('show');
+        $('#slipModal').appendTo('body').modal('show');
     }
+
+    // Close OPD Slip Modal with 100% Guaranteed Cleanup
+    function closeSlipModal() {
+        try {
+            $('#slipModal').modal('hide');
+        } catch (e) {
+            console.warn('Bootstrap modal hide error:', e);
+        }
+        $('#slipModal').removeClass('show').hide();
+        $('body').removeClass('modal-open').css('padding-right', '');
+        $('.modal-backdrop').remove();
+    }
+
+    // Direct event handlers for cross button, backdrop click, and Escape key
+    $(document).on('click', '.btn-opd-close, [data-dismiss="modal"]', function(e) {
+        e.preventDefault();
+        closeSlipModal();
+    });
+
+    $(document).on('click', '#slipModal', function(e) {
+        if ($(e.target).is('#slipModal')) {
+            closeSlipModal();
+        }
+    });
+
+    $(document).on('keydown', function(e) {
+        if (e.key === 'Escape' || e.keyCode === 27) {
+            closeSlipModal();
+        }
+    });
 
     // Direct 1-Click PDF Download straight from table row (without needing to view modal!)
     function directDownloadRowPdf(btn) {
@@ -621,9 +1064,16 @@
         var reason = btn.getAttribute('data-reason');
         var slipUrl = btn.getAttribute('data-slip-url');
 
+        var tokenFormatted = token || ('#KKP-' + String(id).padStart(5, '0'));
+        var fullVoucherUrl = slipUrl || ('{{ url("/user/appointment") }}/' + id + '/slip');
+
         // Populate Modal Fields
-        document.getElementById('topModalToken').innerText = token || ('#KKP-' + String(id).padStart(5, '0'));
-        document.getElementById('modalTokenRef').innerText = token || ('#KKP-' + String(id).padStart(5, '0'));
+        var topTokenEl = document.getElementById('topModalToken');
+        if (topTokenEl) topTokenEl.innerText = tokenFormatted;
+
+        var mainTokenEl = document.getElementById('modalTokenRef');
+        if (mainTokenEl) mainTokenEl.innerText = tokenFormatted;
+
         document.getElementById('modalPatientName').innerText = name || 'Patient';
         document.getElementById('modalPatientUhid').innerText = uhid || '#PAT-00000';
         document.getElementById('modalPatientEmail').innerText = email || 'N/A';
@@ -635,20 +1085,30 @@
         document.getElementById('modalDate').innerText = date || '-';
         document.getElementById('modalTime').innerText = time || '-';
         document.getElementById('modalReason').innerText = reason || 'Regular Clinical OPD Consultation and Physician Evaluation.';
-        document.getElementById('modalSlipFullView').href = slipUrl || ('/user/appointment/' + id + '/slip');
+
+        var signDocEl = document.getElementById('modalSignDoctor');
+        if (signDocEl) signDocEl.innerText = doctor || 'Dr. KK Patel';
+
+        // Update Links
+        var topFullView = document.getElementById('topModalSlipFullView');
+        if (topFullView) topFullView.href = fullVoucherUrl;
+        var btmFullView = document.getElementById('modalSlipFullView');
+        if (btmFullView) btmFullView.href = fullVoucherUrl;
 
         // Status Badge Style
         var stBadge = document.getElementById('modalStatusBadge');
-        var stLower = (status || 'pending').toLowerCase();
-        stBadge.innerText = (status || 'CONFIRMED').toUpperCase();
-        if (stLower === 'approved' || stLower === 'confirmed') {
-            stBadge.className = 'badge badge-pill badge-success';
-        } else if (stLower === 'completed') {
-            stBadge.className = 'badge badge-pill badge-primary';
-        } else if (stLower === 'cancelled' || stLower === 'rejected') {
-            stBadge.className = 'badge badge-pill badge-danger';
-        } else {
-            stBadge.className = 'badge badge-pill badge-warning';
+        if (stBadge) {
+            var stLower = (status || 'pending').toLowerCase();
+            stBadge.innerText = (status || 'CONFIRMED').toUpperCase();
+            if (stLower === 'approved' || stLower === 'confirmed') {
+                stBadge.className = 'badge badge-pill badge-success';
+            } else if (stLower === 'completed') {
+                stBadge.className = 'badge badge-pill badge-primary';
+            } else if (stLower === 'cancelled' || stLower === 'rejected') {
+                stBadge.className = 'badge badge-pill badge-danger';
+            } else {
+                stBadge.className = 'badge badge-pill badge-warning';
+            }
         }
     }
 
@@ -694,11 +1154,23 @@
     // Print Modal Slip cleanly via temporary print window
     function printModalSlip() {
         var element = document.getElementById('printableSlipArea');
-        var printWin = window.open('', '_blank', 'width=850,height=900');
-        printWin.document.write('<!DOCTYPE html><html><head><title>Print OPD Slip</title>');
+        var printWin = window.open('', '_blank', 'width=880,height=900');
+        printWin.document.write('<!DOCTYPE html><html><head><title>Print OPD Slip - KK Patel Hospital</title>');
         printWin.document.write('<link rel="stylesheet" href="{{ URL::to('/') }}/css/bootstrap.min.css">');
         printWin.document.write('<link rel="stylesheet" href="{{ URL::to('/') }}/css/font-awesome.min.css">');
-        printWin.document.write('<style>body{padding:20px;font-family:sans-serif;} @media print{body{padding:0;} .no-print{display:none;}}</style>');
+        printWin.document.write('<style>');
+        printWin.document.write('body { font-family: "Plus Jakarta Sans", sans-serif; padding: 20px; background: #fff; color: #0f172a; }');
+        printWin.document.write('.opd-modal-paper { border: 1.5px solid #cbd5e1; border-radius: 12px; overflow: hidden; }');
+        printWin.document.write('.modal-slip-header { background: #69275c !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; color: #fff; padding: 20px 24px; }');
+        printWin.document.write('.modal-hospital-title { color: #fff !important; font-size: 18px; font-weight: 800; margin: 0; }');
+        printWin.document.write('.modal-token-bar { background: #f8fafc !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; border-bottom: 1.5px dashed #cbd5e1; padding: 10px 24px; display: flex; justify-content: space-between; }');
+        printWin.document.write('.slip-field-box { background: #f8fafc !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; border: 1px solid #e2e8f0; border-radius: 8px; padding: 10px 12px; margin-bottom: 8px; }');
+        printWin.document.write('.slip-consultation-card { background: #fbf5fa !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; border: 1.5px solid #ebdbe8; border-radius: 10px; padding: 14px 16px; margin-bottom: 16px; }');
+        printWin.document.write('.slip-symptoms-box { background: #fafafa !important; border: 1px dashed #cbd5e1; border-radius: 8px; padding: 10px 14px; }');
+        printWin.document.write('.slip-auth-footer { border-top: 1.5px solid #e2e8f0; padding: 16px 24px; display: flex; justify-content: space-between; }');
+        printWin.document.write('.slip-seal-stamp { border: 2px dashed #059669; color: #059669; padding: 4px 12px; border-radius: 6px; font-weight: 800; }');
+        printWin.document.write('@media print { body { padding: 0; } .no-print { display: none !important; } }');
+        printWin.document.write('</style>');
         printWin.document.write('</head><body>');
         printWin.document.write(element.innerHTML);
         printWin.document.write('</body></html>');

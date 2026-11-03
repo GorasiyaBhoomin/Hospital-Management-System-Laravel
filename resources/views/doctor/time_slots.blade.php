@@ -88,6 +88,40 @@
         </div>
     </div>
 
+    @if(!$doctor->is_available)
+        <div class="alert alert-danger d-flex align-items-center justify-content-between flex-wrap gap-2 p-3 mb-4 shadow-sm" style="border-radius: 12px; background: #fef2f2; border: 1.5px solid #fecaca; color: #991b1b;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fa fa-ban fa-lg text-danger"></i>
+                <div>
+                    <strong style="font-size: 14px;">You are currently OFF DUTY (Out of Office):</strong>
+                    <div style="font-size: 12.5px; margin-top: 2px;">All your consultation time slots are currently blocked and paused from online patient bookings across the hospital portal.</div>
+                </div>
+            </div>
+            <a href="{{ route('doctor.schedule.toggle_duty') }}" class="btn btn-sm btn-success rounded-pill font-weight-bold px-3">
+                <i class="fa fa-power-off mr-1"></i> Switch to ON DUTY
+            </a>
+        </div>
+    @endif
+
+    @php
+        $selDayName = date('l', strtotime($selectedDate));
+        $dayOffSchedule = \App\Models\DoctorSchedule::where('doctor_id', $doctor->id)->where('day_name', $selDayName)->first();
+    @endphp
+    @if($dayOffSchedule && $dayOffSchedule->is_day_off)
+        <div class="alert alert-warning d-flex align-items-center justify-content-between flex-wrap gap-2 p-3 mb-4 shadow-sm" style="border-radius: 12px; background: #fffbeb; border: 1.5px solid #fde68a; color: #92400e;">
+            <div class="d-flex align-items-center gap-2">
+                <i class="fa fa-calendar-times-o fa-lg text-warning"></i>
+                <div>
+                    <strong style="font-size: 14px;">Weekly Day Off on {{ $selDayName }}s ({{ $dayOffSchedule->notes ?: 'Scheduled Rest' }}):</strong>
+                    <div style="font-size: 12.5px; margin-top: 2px;">Patients cannot book standard OPD consultations on this day.</div>
+                </div>
+            </div>
+            <a href="{{ route('doctor.schedule') }}" class="btn btn-sm btn-outline-warning rounded-pill font-weight-bold px-3">
+                <i class="fa fa-pencil mr-1"></i> Edit Schedule
+            </a>
+        </div>
+    @endif
+
     <!-- Live Date Occupancy Filter Bar -->
     <div class="doc-card mb-4" style="background: #ffffff; border-radius: 14px; border: 1px solid #e2e8f0; padding: 16px 20px;">
         <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">

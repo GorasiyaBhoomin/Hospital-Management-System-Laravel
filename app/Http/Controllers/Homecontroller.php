@@ -61,6 +61,24 @@ class Homecontroller extends Controller
                 // ignore
             }
         }
+
+        // Validate Doctor Availability (Off-Duty / Day-Off check)
+        $doc = $req->input('username');
+        $doctorRecord = Doctors::where('username', $doc)->first();
+        if ($doctorRecord && !$doctorRecord->is_available) {
+            return back()->withInput()->withErrors([
+                'username' => "Dr. {$doctorRecord->username} is currently Off-Duty (Out of Office) and not accepting online appointments. Please select an available doctor."
+            ]);
+        }
+        $calcDay = $req->input('day') ?: date('l', strtotime($req->date));
+        if ($doctorRecord && $calcDay) {
+            $sched = \App\Models\DoctorSchedule::where('doctor_id', $doctorRecord->id)->where('day_name', $calcDay)->first();
+            if ($sched && $sched->is_day_off) {
+                return back()->withInput()->withErrors([
+                    'date' => "Dr. {$doctorRecord->username} has a scheduled Day Off on {$calcDay}s ({$sched->notes}). Please pick another date."
+                ]);
+            }
+        }
         
         $appointment = new appointment();
     $appointment->appointmentname=$req->appointmentname;
@@ -116,7 +134,8 @@ class Homecontroller extends Controller
 
         $html = '<option value="">Select Doctor</option>';
         foreach($doctors as $doctor){
-            $html .= '<option value="'.$doctor->username.'">'.$doctor->username.'</option>';
+            $dutyBadge = $doctor->is_available ? '' : ' • [Off-Duty]';
+            $html .= '<option value="'.$doctor->username.'">'.$doctor->username.$dutyBadge.'</option>';
         }
         return $html;
     }

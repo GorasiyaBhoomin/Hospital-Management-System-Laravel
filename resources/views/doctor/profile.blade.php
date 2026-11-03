@@ -54,7 +54,7 @@
                 </div>
 
                 <div style="font-size: 13px; color: #475569; text-align: left; background: #f8fafc; padding: 14px 16px; border-radius: 12px; border: 1px solid #e2e8f0; line-height: 1.6;">
-                    <div><strong class="text-dark">Email:</strong> {{ $doctor->email }}</div>
+                    <div><strong class="text-dark">Email:</strong readonly> {{ $doctor->email }}</div>
                     <div><strong class="text-dark">Phone:</strong> {{ $doctor->phone }}</div>
                     <div><strong class="text-dark">Room:</strong> {{ $doctor->room_no ?: 'OPD Room #102' }}</div>
                     <div><strong class="text-dark">Fee:</strong> ₹{{ number_format($doctor->consultation_fee ?: 500, 2) }}</div>
@@ -109,9 +109,8 @@
                                 @enderror
                             </div>
 
-                            <div class="col-md-6">
-                                <label class="font-weight-bold" style="font-size: 13px; color: #334155;">
-                                    Clinical Department / Specialty <span class="text-danger">*</span>
+                               <label class="font-weight-bold" style="font-size: 13px; color: #334155;">
+                                    Clinical Department / Specialty <span class="text-danger" >*</span>
                                 </label>
                                 <select name="departmentname" class="form-control"  style="border-radius: 10px; font-weight: 600;">
                                     @foreach($departments as $dept)
@@ -120,7 +119,8 @@
                                         </option>
                                     @endforeach
                                 </select>
-                            </div>
+                            </div> <div class="col-md-6">
+                            
                         </div>
 
                         <!-- Row 3: Qualification, Experience, Room & Fee -->

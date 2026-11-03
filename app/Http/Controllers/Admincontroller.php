@@ -9,6 +9,8 @@ use App\Models\PasswordReset;
 use App\Models\User;
 use App\Models\feedback;
 use App\Models\appointment;
+use App\Models\Prescription;
+use App\Models\PrescriptionMedicine;
 
 use Illuminate\Support\Facades\Mail;
 
@@ -733,6 +735,24 @@ public function add_appointment_validates(Request $req){
                     // ignore
                 }
             }
+
+            // Validate Doctor Availability (Off-Duty / Day-Off check)
+            $doc = $req->input('username');
+            $doctorRecord = Doctors::where('username', $doc)->first();
+            if ($doctorRecord && !$doctorRecord->is_available) {
+                return back()->withInput()->withErrors([
+                    'username' => "Dr. {$doctorRecord->username} is currently Off-Duty (Out of Office) and not accepting appointments. Please choose an available doctor."
+                ]);
+            }
+            $calcDay = $req->input('day') ?: date('l', strtotime($req->date));
+            if ($doctorRecord && $calcDay) {
+                $sched = \App\Models\DoctorSchedule::where('doctor_id', $doctorRecord->id)->where('day_name', $calcDay)->first();
+                if ($sched && $sched->is_day_off) {
+                    return back()->withInput()->withErrors([
+                        'date' => "Dr. {$doctorRecord->username} has a scheduled Day Off on {$calcDay}s ({$sched->notes}). Please pick another date."
+                    ]);
+                }
+            }
             $appointment = new appointment();
             $appointment->appointmentname=$req->appointmentname;
             $appointment->email=$req->email;
@@ -797,8 +817,20 @@ public function add_appointment_validates(Request $req){
     }
     public function appointment_fetch_data()
     {
-        $std3 = appointment::orderBy('id', 'desc')->get();
+        $std3 = appointment::with('prescription.medicines')->orderBy('id', 'desc')->get();
         return view('admin.adminappointments', compact('std3'));
+    }
+
+    /**
+     * View Prescription (Admin read-only access)
+     */
+    public function viewPrescription($id)
+    {
+        $prescription = Prescription::with(['medicines', 'appointment', 'doctor', 'patient'])->findOrFail($id);
+        $role = 'admin';
+        $backUrl = url('/adminappointments');
+
+        return view('prescription.view', compact('prescription', 'role', 'backUrl'));
     }
 
     public function edit_appointment($email)
