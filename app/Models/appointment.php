@@ -22,6 +22,7 @@ class appointment extends Model
         'departmentname',
         'username',
         'date',
+        'day',
         'time',
         'message',
         'Status',

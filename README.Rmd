@@ -1,0 +1,51 @@
+---
+title: "KK Patel Super Speciality Hospital Management System"
+output: github_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<p align="center">
+  <img src="public/img/logo.png" alt="KK Patel Hospital Logo" width="280">
+</p>
+
+# 🏥 KK Patel Super Speciality Hospital Management System
+
+An enterprise-grade, multi-role hospital management and outpatient clinical consultation platform built with **Laravel**, **MySQL**, **Blade**, and **Bootstrap**.
+
+## 📌 System Architecture & Portals
+
+1. **Patient Portal**: UHID `#PAT-XXXXX` management, dynamic doctor slot booking, 30-day monthly advance window restriction, passed-time blocker, printable digital OPD token slip vouchers with barcode.
+2. **Doctor Clinical Console (`/doctor/dashboard`)**: Dedicated doctor guard authentication, live patient consultation queue, dynamic time slot capacity tracker with real-time decrement (`7 Left / 8 Max`), weekly shift planner, and patient history transcripts.
+3. **Super Admin Management Console**: Synchronized live consultation queue, 1-click status changers, doctor onboarding with portal passwords, department allocation, and inquiries audit.
+4. **Public Hospital Website**: Emergency helpline, NABH accreditation, cashless PMJAY desk, doctor profiles, and public OPD booking.
+
+## 📸 Screenshots
+
+- **Doctor Panel - Manage Time Slots & Live Capacity Tracker**:
+  ![Doctor Time Slots](docs/screenshots/01_doctor_panel_time_slots.jpg)
+
+- **Admin Command Center - OPD Queue**:
+  ![Admin Queue](docs/screenshots/02_admin_appointments_queue.jpg)
+
+- **Digital OPD Token Slip / Printable Voucher**:
+  ![Digital OPD Slip](docs/screenshots/03_digital_opd_slip_voucher.jpg)
+
+- **Specialist Doctors Directory**:
+  ![Specialist Doctors](docs/screenshots/04_specialist_doctors_directory.jpg)
+
+- **Patient Portal Dashboard**:
+  ![Patient Dashboard](docs/screenshots/05_patient_portal_dashboard.jpg)
+
+## 🚀 Quick Setup
+
+```bash
+composer install
+cp .env.example .env
+php artisan key:generate
+php artisan migrate
+php artisan serve
+```
+

@@ -90,6 +90,40 @@
 
                                 <div class="col-md-6">
                                     <div class="admin-form-group">
+                                        <label>Portal Login Password <span class="text-danger">*</span></label>
+                                        <div class="admin-input-wrap position-relative">
+                                            <i class="fa fa-lock input-icon"></i>
+                                            <input class="admin-form-control" type="password" id="docPassword" name="password" placeholder="Create doctor password (min 6 characters)" required style="padding-right: 42px;">
+                                            <span class="password-toggle-btn" onclick="togglePasswordVisibility('docPassword', this)" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8;" title="Show/Hide Password">
+                                                <i class="fa fa-eye"></i>
+                                            </span>
+                                        </div>
+                                        <small class="text-muted" style="font-size: 11px;">Password used by doctor to access Doctor Panel.</small>
+                                        @error('password')
+                                            <span style="color: #dc2626; font-size: 12px; font-weight: 600; display: block;">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="admin-form-group">
+                                        <label>Confirm Password <span class="text-danger">*</span></label>
+                                        <div class="admin-input-wrap position-relative">
+                                            <i class="fa fa-check-circle-o input-icon"></i>
+                                            <input class="admin-form-control" type="password" id="docPasswordConfirm" name="password_confirmation" placeholder="Re-type password to confirm" required style="padding-right: 42px;">
+                                            <span class="password-toggle-btn" onclick="togglePasswordVisibility('docPasswordConfirm', this)" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8;" title="Show/Hide Password">
+                                                <i class="fa fa-eye"></i>
+                                            </span>
+                                        </div>
+                                        <small class="text-muted" style="font-size: 11px;">Must match portal login password.</small>
+                                        @error('password_confirmation')
+                                            <span style="color: #dc2626; font-size: 12px; font-weight: 600; display: block;">{{ $message }}</span>
+                                        @enderror
+                                    </div>
+                                </div>
+
+                                <div class="col-md-6">
+                                    <div class="admin-form-group">
                                         <label>Date of Birth</label>
                                         <div class="admin-input-wrap">
                                             <i class="fa fa-calendar input-icon"></i>
@@ -248,6 +282,22 @@
 
         </div>
     </div>
+
+    <script>
+        function togglePasswordVisibility(fieldId, iconWrap) {
+            const input = document.getElementById(fieldId);
+            const icon = iconWrap.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 
 </body>
 

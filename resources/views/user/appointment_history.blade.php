@@ -263,7 +263,10 @@
                                 </td>
 
                                 <td style="padding: 16px 20px; vertical-align: middle;">
-                                    <div style="font-weight: 700; color: #334155;"><i class="fa fa-calendar-o text-muted m-r-5"></i> {{ date('d M Y', strtotime($apt->date)) }}</div>
+                                    <div style="font-weight: 700; color: #334155;">
+                                        <i class="fa fa-calendar-o text-muted m-r-5"></i> {{ date('d M Y', strtotime($apt->date)) }}
+                                        <span class="badge badge-light border text-primary" style="font-size: 11px; margin-left: 4px; font-weight: 700;">{{ $apt->day ?: date('l', strtotime($apt->date)) }}</span>
+                                    </div>
                                     <div style="font-size: 12px; color: #64748b;"><i class="fa fa-clock-o text-muted m-r-5"></i> {{ $apt->time }}</div>
                                 </td>
 

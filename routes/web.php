@@ -4,6 +4,7 @@ use App\Http\Controllers\Homecontroller;
 use App\Http\Controllers\Admincontroller;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\DoctorController;
 
 use Illuminate\Support\Facades\Route;
 
@@ -28,6 +29,8 @@ Route::get('/appointment', [Homecontroller::class,'appointment']);
 Route::post('appointmentform_validates', [Homecontroller::class, 'appointmentform_validates']);
 Route::post('/getdoctor', [Homecontroller::class,'getdoctor']);
 Route::post('/gettime', [Homecontroller::class,'gettime']);
+Route::match(['get', 'post'], '/api/doctor-slots', [DoctorController::class, 'getDoctorSlots'])->name('doctor.slots.api');
+Route::match(['get', 'post'], '/getdoctor-slots', [DoctorController::class, 'getDoctorSlots']);
 
 //---------------------------------------------------- Admin Routes----------------------------------------------------
 // Route::view('login', 'admin.login')->name('login');
@@ -178,4 +181,48 @@ Route::middleware(['web', 'auth'])->group(function() {
 
     Route::get('/user/doctors', [UserController::class, 'doctors'])->name('user.doctors');
     Route::get('/user/departments', [UserController::class, 'departments'])->name('user.departments');
+});
+
+// =============================================================================
+// DOCTOR PANEL ROUTES (Dedicated Clinical Operations & Availability Console)
+// =============================================================================
+
+// Doctor Authentication (Guest / Public)
+Route::get('/doctor/login', [DoctorController::class, 'showLoginForm'])->name('doctor.login');
+Route::post('/doctor/login', [DoctorController::class, 'login'])->name('doctor.login.submit');
+Route::get('/doctor/logout', [DoctorController::class, 'logout'])->name('doctor.logout');
+
+// Authenticated Doctor Console
+Route::middleware(['web', 'doctor.auth'])->group(function() {
+    Route::get('/doctor/dashboard', [DoctorController::class, 'dashboard'])->name('doctor.dashboard');
+    Route::get('/doctor', function() {
+        return redirect()->route('doctor.dashboard');
+    });
+
+    // My Appointments
+    Route::get('/doctor/appointments', [DoctorController::class, 'appointments'])->name('doctor.appointments');
+    Route::post('/doctor/appointment/{id}/status', [DoctorController::class, 'updateAppointmentStatus'])->name('doctor.appointment.status');
+
+    // Manage Time Slots (CRUD operation forms)
+    Route::get('/doctor/time-slots', [DoctorController::class, 'timeSlots'])->name('doctor.time_slots');
+    Route::post('/doctor/time-slots', [DoctorController::class, 'storeTimeSlot'])->name('doctor.time_slots.store');
+    Route::post('/doctor/time-slots/{id}/update', [DoctorController::class, 'updateTimeSlot'])->name('doctor.time_slots.update');
+    Route::get('/doctor/time-slots/{id}/toggle', [DoctorController::class, 'toggleTimeSlot'])->name('doctor.time_slots.toggle');
+    Route::get('/doctor/time-slots/{id}/delete', [DoctorController::class, 'destroyTimeSlot'])->name('doctor.time_slots.delete');
+
+    // My Schedule & Availability
+    Route::get('/doctor/schedule', [DoctorController::class, 'schedule'])->name('doctor.schedule');
+    Route::post('/doctor/schedule', [DoctorController::class, 'updateSchedule'])->name('doctor.schedule.update');
+    Route::get('/doctor/schedule/toggle-duty', [DoctorController::class, 'toggleAvailability'])->name('doctor.schedule.toggle_duty');
+
+    // My Patients
+    Route::get('/doctor/patients', [DoctorController::class, 'patients'])->name('doctor.patients');
+
+    // My Profile
+    Route::get('/doctor/profile', [DoctorController::class, 'profile'])->name('doctor.profile');
+    Route::post('/doctor/profile', [DoctorController::class, 'updateProfile'])->name('doctor.profile.update');
+
+    // Change Password
+    Route::get('/doctor/change-password', [DoctorController::class, 'changePassword'])->name('doctor.change_password');
+    Route::post('/doctor/change-password', [DoctorController::class, 'updatePassword'])->name('doctor.password.update');
 });

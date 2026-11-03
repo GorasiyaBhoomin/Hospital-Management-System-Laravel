@@ -251,16 +251,47 @@ class UserController extends Controller
     {
         $user = Auth::user();
 
+        $maxAdvanceDate = date('Y-m-d', strtotime('+30 days'));
+
         $request->validate([
-            'date' => 'required|date|after_or_equal:today',
+            'date' => 'required|date|after_or_equal:today|before_or_equal:' . $maxAdvanceDate,
             'time' => 'required',
+        ], [
+            'date.after_or_equal' => 'Please select a date from today onwards. Past dates are not allowed.',
+            'date.before_or_equal' => 'Appointments can only be booked up to 30 days in advance (till ' . date('d M Y', strtotime('+30 days')) . ') according to the monthly schedule.',
+            'time.required' => 'Please select an available doctor consultation time slot.',
         ]);
+
+        // Prevent booking slots that have already passed for today
+        if ($request->date === date('Y-m-d')) {
+            $timeInput = $request->time;
+            $slotStartStr = trim(explode('-', $timeInput)[0]);
+            try {
+                $slotStart = \Carbon\Carbon::parse($request->date . ' ' . $slotStartStr, 'Asia/Kolkata');
+                if (\Carbon\Carbon::now('Asia/Kolkata')->greaterThanOrEqualTo($slotStart)) {
+                    return back()->withInput()->withErrors([
+                        'time' => "The time slot '{$timeInput}' has already passed for today. Please select an upcoming slot or choose another date."
+                    ]);
+                }
+            } catch (\Exception $e) {
+                // ignore
+            }
+        }
 
         $dept   = $request->input('departmentname') ?: $request->input('department', 'General Medicine');
         $doc    = $request->input('username') ?: $request->input('doctor', 'Senior Consultant');
         $phone  = $request->input('phone') ?: $request->input('phone_number') ?: ($user->phone ?: ($user->phone_number ?: '9999999999'));
         $gender = $request->input('gender', 'Male');
         $msg    = $request->input('message') ?: $request->input('massage', 'Regular Clinical OPD Consultation');
+
+        $day = $request->input('day');
+        if (empty($day) && $request->filled('date')) {
+            try {
+                $day = \Carbon\Carbon::parse($request->date)->format('l');
+            } catch (\Exception $e) {
+                $day = null;
+            }
+        }
 
         $appointment = appointment::create([
             'user_id'         => $user->id,
@@ -271,6 +302,7 @@ class UserController extends Controller
             'departmentname'  => $dept,
             'username'        => $doc,
             'date'            => $request->date,
+            'day'             => $day,
             'time'            => $request->time,
             'message'         => $msg,
             'Status'          => 'Pending',

@@ -95,6 +95,18 @@
                                                         <i class="ti-angle-right kk-item-arrow"></i>
                                                     </a>
                                                 </li>
+                                                <li>
+                                                    <a class="kk-dropdown-item" href="{{ url('/doctor/login') }}">
+                                                        <div class="kk-drop-icon" style="background: #e6f7f5;">
+                                                            <i class="fa fa-user-md" style="color: #00a896;"></i>
+                                                        </div>
+                                                        <div class="kk-drop-text">
+                                                            <strong class="kk-drop-title">Doctor Portal</strong>
+                                                            <small class="kk-drop-subtitle">Specialist Console & OPD Login</small>
+                                                        </div>
+                                                        <i class="ti-angle-right kk-item-arrow"></i>
+                                                    </a>
+                                                </li>
                                             </ul>
                                         </li>
 

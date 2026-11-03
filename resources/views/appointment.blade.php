@@ -996,23 +996,44 @@
                                     <div class="input-control-box">
                                         <input type="date" id="date" name="date"
                                             min="<?php echo date('Y-m-d'); ?>"
+                                            max="<?php echo date('Y-m-d', strtotime('+30 days')); ?>"
                                             class="modern-field @error('date') is-invalid-field @enderror"
                                             value="{{ old('date', date('Y-m-d')) }}" >
                                     </div>
+                                    <small class="text-muted d-block mt-1" style="font-size: 11px;">
+                                        <i class="fa fa-info-circle"></i> Booking open for this month till <?php echo date('d M Y', strtotime('+30 days')); ?>.
+                                    </small>
                                     @error('date')
                                         <div class="validation-error-msg"><i class="fa fa-exclamation-circle"></i> {{ $message }}</div>
                                     @enderror
                                 </div>
 
-                                <!-- Time -->
+                                <!-- Hidden day input -->
+                                <input type="hidden" name="day" id="public_day" value="{{ old('day') }}">
+
+                                <!-- Doctor Day Schedule & Live Status -->
+                                <div class="form-group-item form-group-full" id="public_doc_notice" style="display: none;">
+                                    <div style="background: #f8fafc; border: 1px solid #e2e8f0; border-radius: 12px; padding: 12px 16px; font-size: 13px;">
+                                        <div style="display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 8px;">
+                                            <div style="display: flex; align-items: center; gap: 8px;">
+                                                <span id="public_day_badge" style="background: #69275c; color: #fff; font-weight: 700; padding: 3px 10px; border-radius: 6px; font-size: 11px; text-transform: uppercase;">DAY</span>
+                                                <strong id="public_doc_name" style="color: #0f172a;">Doctor OPD Schedule</strong>
+                                            </div>
+                                            <span id="public_duty_status" style="font-weight: 700; font-size: 12px;">Checking availability...</span>
+                                        </div>
+                                        <div id="public_doc_timings" style="margin-top: 6px; font-size: 12px; color: #64748b;"></div>
+                                    </div>
+                                </div>
+
+                                <!-- Time Slot -->
                                 <div class="form-group-item">
                                     <label class="field-label" for="time">
-                                        <i class="fa fa-clock-o"></i> Preferred Time <span class="req">*</span>
+                                        <i class="fa fa-clock-o"></i> Doctor OPD Time Slot <span class="req">*</span>
                                     </label>
-                                    <div class="input-control-box">
-                                        <input type="time" id="time" name="time"
-                                            class="modern-field @error('time') is-invalid-field @enderror"
-                                            value="{{ old('time', '10:00') }}" >
+                                    <div class="input-control-box select-picker-box">
+                                        <select id="time" name="time" class="modern-field modern-select @error('time') is-invalid-field @enderror" required>
+                                            <option value="">Select Doctor & Date First</option>
+                                        </select>
                                     </div>
                                     @error('time')
                                         <div class="validation-error-msg"><i class="fa fa-exclamation-circle"></i> {{ $message }}</div>
@@ -1217,8 +1238,102 @@
             }
         }
 
+        function getDayOfWeekName(dateStr) {
+            if (!dateStr) return '';
+            var d = new Date(dateStr + 'T00:00:00');
+            var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            return days[d.getDay()];
+        }
+
+        function loadDoctorSlotsPublic() {
+            var docElem = document.getElementById('doctors');
+            var dateElem = document.getElementById('date');
+            var timeElem = document.getElementById('time');
+            var dayElem = document.getElementById('public_day');
+            var noticeElem = document.getElementById('public_doc_notice');
+            var dayBadgeElem = document.getElementById('public_day_badge');
+            var docNameElem = document.getElementById('public_doc_name');
+            var dutyStatusElem = document.getElementById('public_duty_status');
+            var timingsElem = document.getElementById('public_doc_timings');
+
+            if (!docElem || !dateElem || !timeElem) return;
+
+            var doctor = docElem.value;
+            var date = dateElem.value;
+
+            if (dayElem && date) {
+                dayElem.value = getDayOfWeekName(date);
+            }
+
+            if (!doctor) {
+                if (noticeElem) noticeElem.style.display = 'none';
+                timeElem.innerHTML = '<option value="">Select Doctor (Choose Department First)</option>';
+                return;
+            }
+
+            if (!date) {
+                if (noticeElem) noticeElem.style.display = 'none';
+                timeElem.innerHTML = '<option value="">Select Appointment Date</option>';
+                return;
+            }
+
+            timeElem.innerHTML = '<option value="">Loading doctor time slots...</option>';
+
+            fetch('{{ route("doctor.slots.api") }}?doctor=' + encodeURIComponent(doctor) + '&date=' + encodeURIComponent(date))
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data.status === 'success') {
+                        if (dayElem) dayElem.value = data.day;
+                        if (noticeElem) noticeElem.style.display = 'block';
+                        if (dayBadgeElem) dayBadgeElem.textContent = data.day;
+                        if (docNameElem) docNameElem.textContent = data.doctor.name + ' (' + data.doctor.department + ')';
+
+                        if (data.is_day_off) {
+                            if (dutyStatusElem) {
+                                dutyStatusElem.textContent = 'Off-Duty (' + data.schedule_notes + ')';
+                                dutyStatusElem.style.color = '#dc2626';
+                            }
+                            if (timingsElem) {
+                                timingsElem.innerHTML = '<strong>Notice:</strong> Doctor has weekly off on <strong>' + data.day + 's</strong>. You can book another day.';
+                            }
+                        } else {
+                            if (dutyStatusElem) {
+                                dutyStatusElem.textContent = 'On Duty (Room: ' + data.doctor.room_no + ')';
+                                dutyStatusElem.style.color = '#16a34a';
+                            }
+                            if (timingsElem) {
+                                timingsElem.innerHTML = '<strong>OPD Shift:</strong> ' + (data.shift_timings || 'Regular Consultations') + ' | <strong>Fee:</strong> ₹' + data.doctor.fee;
+                            }
+                        }
+
+                        var opts = '<option value="">Select Time Slot (' + data.day + ')</option>';
+                        var visibleCount = 0;
+                        if (data.slots && data.slots.length > 0) {
+                            data.slots.forEach(function(s) {
+                                // Skip past/expired slots for today
+                                if (s.is_past) return;
+                                visibleCount++;
+                                var seatInfo = s.is_full ? '(Full)' : '(' + s.remaining + ' seats left)';
+                                opts += '<option value="' + s.slot_display + '" ' + (s.is_full ? 'disabled' : '') + '>' + s.slot_display + ' ' + seatInfo + '</option>';
+                            });
+                        }
+                        if (visibleCount === 0) {
+                            opts = '<option value="">All OPD slots have ended for today. Please pick another date.</option>';
+                        }
+                        timeElem.innerHTML = opts;
+                    }
+                })
+                .catch(function(err) {
+                    console.error('Slot loading error:', err);
+                    timeElem.innerHTML = '<option value="">Error loading slots</option>';
+                });
+        }
+
         document.addEventListener("DOMContentLoaded", function () {
             var deptElem = document.getElementById('department');
+            var docElem = document.getElementById('doctors');
+            var dateElem = document.getElementById('date');
+
             if (deptElem) {
                 deptElem.addEventListener('change', function () {
                     loadDepartmentDoctors(this.value, null);
@@ -1227,6 +1342,17 @@
                 // Auto-load if department was already selected on page load
                 if (deptElem.value) {
                     loadDepartmentDoctors(deptElem.value, "{{ old('username', request('doc')) }}");
+                }
+            }
+
+            if (docElem) {
+                docElem.addEventListener('change', loadDoctorSlotsPublic);
+            }
+            if (dateElem) {
+                dateElem.addEventListener('change', loadDoctorSlotsPublic);
+                var dayElem = document.getElementById('public_day');
+                if (dayElem && dateElem.value) {
+                    dayElem.value = getDayOfWeekName(dateElem.value);
                 }
             }
         });

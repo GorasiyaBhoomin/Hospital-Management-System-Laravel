@@ -425,7 +425,7 @@
                     <div class="slip-field-box">
                         <span class="slip-field-label">Patient UHID / ID</span>
                         <h6 class="slip-field-value" style="font-family: monospace; color: #0284c7;">
-                            #PAT-{{ str_pad($appointment->user_id ?: $user->id, 5, '0', STR_PAD_LEFT) }}
+                            #PAT-{{ str_pad($appointment->user_id ?: $appointment->id, 5, '0', STR_PAD_LEFT) }}
                         </h6>
                     </div>
                 </div>
@@ -433,7 +433,7 @@
                     <div class="slip-field-box">
                         <span class="slip-field-label">Contact Mobile</span>
                         <h6 class="slip-field-value">
-                            {{ $appointment->phone ?: ($user->phone ?: ($user->phone_number ?: 'N/A')) }}
+                            {{ $appointment->phone ?: ($user->phone ?? 'N/A') }}
                         </h6>
                     </div>
                 </div>
@@ -441,7 +441,7 @@
                     <div class="slip-field-box">
                         <span class="slip-field-label">Patient Registered Email</span>
                         <h6 class="slip-field-value" style="font-size: 13px;">
-                            {{ $appointment->email ?: $user->email }}
+                            {{ $appointment->email ?: ($user->email ?? 'N/A') }}
                         </h6>
                     </div>
                 </div>

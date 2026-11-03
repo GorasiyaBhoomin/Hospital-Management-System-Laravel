@@ -92,6 +92,20 @@
 
                                         <div class="col-md-6">
                                             <div class="admin-form-group">
+                                                <label>Reset Portal Password</label>
+                                                <div class="admin-input-wrap position-relative">
+                                                    <i class="fa fa-lock input-icon"></i>
+                                                    <input class="admin-form-control" type="password" id="editDocPassword" name="password" placeholder="Leave blank to keep current password" style="padding-right: 42px;">
+                                                    <span class="password-toggle-btn" onclick="togglePasswordVisibility('editDocPassword', this)" style="position: absolute; right: 14px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8;" title="Show/Hide Password">
+                                                        <i class="fa fa-eye"></i>
+                                                    </span>
+                                                </div>
+                                                <small class="text-muted" style="font-size: 11px;">Enter a new password only if you wish to change it.</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="admin-form-group">
                                                 <label>Date of Birth</label>
                                                 <div class="admin-input-wrap">
                                                     <i class="fa fa-calendar input-icon"></i>
@@ -249,6 +263,22 @@
 
         </div>
     </div>
+
+    <script>
+        function togglePasswordVisibility(fieldId, iconWrap) {
+            const input = document.getElementById(fieldId);
+            const icon = iconWrap.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
+            }
+        }
+    </script>
 
 </body>
 

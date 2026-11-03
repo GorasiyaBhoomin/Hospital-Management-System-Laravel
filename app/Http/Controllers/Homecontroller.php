@@ -25,13 +25,15 @@ class Homecontroller extends Controller
             return redirect()->route('user.login')->with('error', 'Please sign in to your patient account first to confirm and book your appointment.');
         }
 
+        $maxAdvanceDate = date('Y-m-d', strtotime('+30 days'));
+
         $req->validate([
                 'appointmentname' => 'required|regex:/^[a-zA-Z]+$/u|min:3|max:12',
                 'email'=>'required|email:rfc,dns',
                 'phone'=>'required|digits:10',
                 'departmentname'=>'required',
                 'username'=>'required',
-                'date'=>'required',
+                'date'=>'required|date|after_or_equal:today|before_or_equal:' . $maxAdvanceDate,
                 'time'=>'required',
                 'message'=>'required',
                 'gender'=>'required',
@@ -40,7 +42,25 @@ class Homecontroller extends Controller
             'appointmentname.required' => 'Your Name  is required',
             'message.required' => 'Problem facing field required',
             'username.required' => 'the doctor field is required',
+            'date.after_or_equal' => 'Appointment cannot be booked for past dates.',
+            'date.before_or_equal' => 'Appointments can only be booked up to 30 days in advance according to the monthly schedule.',
         ]);
+
+        // Prevent booking slots that have already passed for today
+        if ($req->date === date('Y-m-d')) {
+            $timeInput = $req->time;
+            $slotStartStr = trim(explode('-', $timeInput)[0]);
+            try {
+                $slotStart = \Carbon\Carbon::parse($req->date . ' ' . $slotStartStr, 'Asia/Kolkata');
+                if (\Carbon\Carbon::now('Asia/Kolkata')->greaterThanOrEqualTo($slotStart)) {
+                    return back()->withInput()->withErrors([
+                        'time' => "The consultation slot '{$timeInput}' has already passed for today. Please select an upcoming slot or choose another date."
+                    ]);
+                }
+            } catch (\Exception $e) {
+                // ignore
+            }
+        }
         
         $appointment = new appointment();
     $appointment->appointmentname=$req->appointmentname;
@@ -50,6 +70,15 @@ class Homecontroller extends Controller
     $appointment->departmentname=$req->departmentname;
     $appointment->username=$req->username;
     $appointment->date=$req->date;
+    $day = $req->input('day');
+    if (empty($day) && $req->filled('date')) {
+        try {
+            $day = \Carbon\Carbon::parse($req->date)->format('l');
+        } catch (\Exception $e) {
+            $day = null;
+        }
+    }
+    $appointment->day = $day;
     $appointment->time=$req->time;
     $appointment->message=$req->message;
     $appointment->user_id=Auth::id();

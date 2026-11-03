@@ -120,7 +120,25 @@
                                     <div class="input-group-prepend">
                                         <span class="input-group-text bg-light border-right-0"><i class="fa fa-calendar text-muted"></i></span>
                                     </div>
-                                    <input type="date" name="date" class="form-control" value="{{ old('date', date('Y-m-d', strtotime('+1 day'))) }}" min="{{ date('Y-m-d') }}" required style="height: 46px; font-size: 14px;">
+                                    <input type="date" name="date" id="dateInput" class="form-control" value="{{ old('date', date('Y-m-d', strtotime('+1 day'))) }}" min="{{ date('Y-m-d') }}" max="{{ date('Y-m-d', strtotime('+30 days')) }}" required style="height: 46px; font-size: 14px;">
+                                </div>
+                                <small class="text-muted d-block mt-1" style="font-size: 11.5px;">
+                                    <i class="fa fa-info-circle text-primary"></i> Booking open for this month (till {{ date('d M Y', strtotime('+30 days')) }}).
+                                </small>
+                                <input type="hidden" name="day" id="userDayInput" value="{{ old('day') }}">
+                            </div>
+
+                            <!-- Doctor Availability & Day Schedule Live Banner -->
+                            <div class="col-12 mb-3" id="doctorScheduleNotice" style="display: none;">
+                                <div class="p-3 rounded-3" id="scheduleNoticeBox" style="border: 1px solid #e2e8f0; background: #f8fafc; font-size: 13px;">
+                                    <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="badge px-3 py-1 text-uppercase text-white" id="dayDisplayBadge" style="background: #69275c; letter-spacing: 0.5px; font-weight: 700; border-radius: 6px;">Day</span>
+                                            <strong id="docScheduleName" style="color: #0f172a;">Doctor Schedule</strong>
+                                        </div>
+                                        <span id="docDutyStatusBadge" class="badge badge-pill px-3 py-1" style="font-weight: 700;">Checking availability...</span>
+                                    </div>
+                                    <div class="mt-2" id="docScheduleDetails" style="font-size: 12.5px; color: #475569;"></div>
                                 </div>
                             </div>
                         </div>
@@ -128,22 +146,20 @@
                         <!-- Row 4: Time Slot & Gender -->
                         <div class="row">
                             <div class="col-12 col-md-6 mb-3">
-                                <label class="form-label font-weight-bold" style="font-size: 13px; color: #0f172a;">Preferred OPD Time Slot <span class="text-danger">*</span></label>
+                                <div class="d-flex align-items-center justify-content-between mb-1">
+                                    <label class="form-label font-weight-bold mb-0" style="font-size: 13px; color: #0f172a;">Doctor OPD Time Slot <span class="text-danger">*</span></label>
+                                    <small id="slotStatusHint" class="text-muted" style="font-size: 11px;">Dynamic doctor slots</small>
+                                </div>
                                 <div class="input-group">
                                     <div class="input-group-prepend">
                                         <span class="input-group-text bg-light border-right-0"><i class="fa fa-clock-o text-muted"></i></span>
                                     </div>
-                                    <select name="time" class="form-control" required style="height: 46px; font-size: 14px;">
-                                        <option value="">-- Select OPD Slot --</option>
-                                        <option value="09:00 AM - 10:00 AM" {{ old('time') == '09:00 AM - 10:00 AM' ? 'selected' : '' }}>09:00 AM - 10:00 AM (Morning OPD)</option>
-                                        <option value="10:00 AM - 11:00 AM" {{ old('time') == '10:00 AM - 11:00 AM' ? 'selected' : '' }}>10:00 AM - 11:00 AM</option>
-                                        <option value="11:00 AM - 12:00 PM" {{ old('time') == '11:00 AM - 12:00 PM' ? 'selected' : '' }}>11:00 AM - 12:00 PM</option>
-                                        <option value="12:00 PM - 01:00 PM" {{ old('time') == '12:00 PM - 01:00 PM' ? 'selected' : '' }}>12:00 PM - 01:00 PM</option>
-                                        <option value="04:00 PM - 05:00 PM" {{ old('time') == '04:00 PM - 05:00 PM' ? 'selected' : '' }}>04:00 PM - 05:00 PM (Evening OPD)</option>
-                                        <option value="05:00 PM - 06:00 PM" {{ old('time') == '05:00 PM - 06:00 PM' ? 'selected' : '' }}>05:00 PM - 06:00 PM</option>
-                                        <option value="06:00 PM - 07:00 PM" {{ old('time') == '06:00 PM - 07:00 PM' ? 'selected' : '' }}>06:00 PM - 07:00 PM</option>
+                                    <select name="time" id="slotSelect" class="form-control" required style="height: 46px; font-size: 14px;">
+                                        <option value="">-- Choose Doctor & Date first --</option>
                                     </select>
                                 </div>
+                                <!-- Interactive Quick Slot Chips -->
+                                <div id="slotChipsContainer" class="d-flex flex-wrap gap-2 mt-2" style="max-height: 120px; overflow-y: auto;"></div>
                             </div>
 
                             <div class="col-12 col-md-6 mb-3">
@@ -239,21 +255,208 @@
     document.addEventListener('DOMContentLoaded', function() {
         var deptSelect = document.getElementById('deptSelect');
         var docSelect = document.getElementById('doctorSelect');
+        var dateInput = document.getElementById('dateInput');
+        var dayInput = document.getElementById('userDayInput');
+        var slotSelect = document.getElementById('slotSelect');
+        var slotChipsContainer = document.getElementById('slotChipsContainer');
+        var scheduleNotice = document.getElementById('doctorScheduleNotice');
+        var scheduleNoticeBox = document.getElementById('scheduleNoticeBox');
+        var dayDisplayBadge = document.getElementById('dayDisplayBadge');
+        var docScheduleName = document.getElementById('docScheduleName');
+        var docDutyStatusBadge = document.getElementById('docDutyStatusBadge');
+        var docScheduleDetails = document.getElementById('docScheduleDetails');
+        var slotStatusHint = document.getElementById('slotStatusHint');
 
+        // Department filter
         if (deptSelect && docSelect) {
             deptSelect.addEventListener('change', function() {
                 var selectedDept = this.value;
+                var currentDocVal = docSelect.value;
+                var docStillValid = false;
+
                 for (var i = 0; i < docSelect.options.length; i++) {
                     var opt = docSelect.options[i];
                     if (!opt.value) continue;
                     var docDept = opt.getAttribute('data-dept');
                     if (!selectedDept || docDept === selectedDept) {
                         opt.style.display = '';
+                        if (opt.value === currentDocVal) docStillValid = true;
                     } else {
                         opt.style.display = 'none';
                     }
                 }
+
+                if (!docStillValid && currentDocVal) {
+                    docSelect.value = '';
+                    loadDoctorSlotsAndDay();
+                }
             });
+        }
+
+        // Calculate Day Name from Date string
+        function getDayName(dateString) {
+            if (!dateString) return '';
+            var d = new Date(dateString + 'T00:00:00');
+            var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+            return days[d.getDay()];
+        }
+
+        // Fetch Doctor Slots & Day Schedule from API
+        function loadDoctorSlotsAndDay() {
+            var doctor = docSelect ? docSelect.value : '';
+            var date = dateInput ? dateInput.value : '';
+
+            // Calculate Day
+            var calculatedDay = getDayName(date);
+            if (dayInput) dayInput.value = calculatedDay;
+
+            if (!doctor) {
+                if (scheduleNotice) scheduleNotice.style.display = 'none';
+                if (slotSelect) slotSelect.innerHTML = '<option value="">-- Choose Specialist Doctor first --</option>';
+                if (slotChipsContainer) slotChipsContainer.innerHTML = '';
+                if (slotStatusHint) slotStatusHint.textContent = 'Please choose doctor';
+                return;
+            }
+
+            if (!date) {
+                if (scheduleNotice) scheduleNotice.style.display = 'none';
+                if (slotSelect) slotSelect.innerHTML = '<option value="">-- Select consultation date --</option>';
+                if (slotChipsContainer) slotChipsContainer.innerHTML = '';
+                return;
+            }
+
+            if (slotStatusHint) slotStatusHint.textContent = 'Loading live doctor slots...';
+            if (slotSelect) slotSelect.innerHTML = '<option value="">Loading consultation slots...</option>';
+
+            fetch('{{ route("doctor.slots.api") }}?doctor=' + encodeURIComponent(doctor) + '&date=' + encodeURIComponent(date))
+                .then(function(res) { return res.json(); })
+                .then(function(data) {
+                    if (data.status === 'success') {
+                        if (dayInput) dayInput.value = data.day;
+                        if (scheduleNotice) scheduleNotice.style.display = 'block';
+                        if (dayDisplayBadge) dayDisplayBadge.textContent = data.day;
+                        if (docScheduleName) docScheduleName.textContent = data.doctor.name + ' (' + data.doctor.department + ')';
+
+                        if (data.is_day_off) {
+                            // Doctor Day Off
+                            scheduleNoticeBox.style.background = '#fef2f2';
+                            scheduleNoticeBox.style.borderColor = '#fecaca';
+                            docDutyStatusBadge.className = 'badge badge-danger px-3 py-1';
+                            docDutyStatusBadge.style.background = '#dc2626';
+                            docDutyStatusBadge.style.color = '#fff';
+                            docDutyStatusBadge.innerHTML = '<i class="fa fa-exclamation-circle"></i> Off-Duty (' + data.schedule_notes + ')';
+                            docScheduleDetails.innerHTML = '<strong>Note:</strong> Doctor does not have regular OPD on <strong>' + data.day + 's</strong>. You may book emergency slot or choose another date.';
+                            if (slotStatusHint) slotStatusHint.textContent = 'Doctor off-duty';
+                        } else {
+                            // Doctor on duty
+                            scheduleNoticeBox.style.background = '#f0fdf4';
+                            scheduleNoticeBox.style.borderColor = '#bbf7d0';
+                            docDutyStatusBadge.className = 'badge badge-success px-3 py-1';
+                            docDutyStatusBadge.style.background = '#16a34a';
+                            docDutyStatusBadge.style.color = '#fff';
+                            docDutyStatusBadge.innerHTML = '<i class="fa fa-check-circle"></i> On Duty';
+                            docScheduleDetails.innerHTML = '<strong>Hours:</strong> ' + (data.shift_timings || 'Regular Consultations') + ' | <strong>Room:</strong> ' + data.doctor.room_no + ' | <strong>Fee:</strong> ₹' + data.doctor.fee;
+                            if (slotStatusHint) slotStatusHint.textContent = data.slots.length + ' slots available';
+                        }
+
+                        // Populate Slots Dropdown & Chips (Excluding Past/Expired Slots for Today)
+                        var selectHtml = '<option value="">-- Select Time Slot (' + data.day + ') --</option>';
+                        var chipsHtml = '';
+                        var visibleSlotsCount = 0;
+
+                        if (data.slots && data.slots.length > 0) {
+                            data.slots.forEach(function(s) {
+                                // If the time has already passed for today, do not show it
+                                if (s.is_past) {
+                                    return;
+                                }
+                                visibleSlotsCount++;
+
+                                var isFull = s.is_full;
+                                var seatsText = isFull ? '(Full)' : '(' + s.remaining + ' seats left)';
+                                selectHtml += '<option value="' + s.slot_display + '" ' + (isFull ? 'disabled style="color: #94a3b8;"' : '') + '>' + s.slot_display + ' ' + seatsText + '</option>';
+
+                                if (!isFull) {
+                                    chipsHtml += '<button type="button" class="btn btn-sm btn-outline-secondary slot-chip-btn rounded-pill px-3 py-1" data-slot="' + s.slot_display + '" style="font-size: 12px; font-weight: 600; border-color: #cbd5e1; color: #334155;">' +
+                                        '<i class="fa fa-clock-o mr-1"></i> ' + s.slot_display +
+                                        '</button>';
+                                }
+                            });
+                        }
+
+                        if (visibleSlotsCount === 0) {
+                            selectHtml = '<option value="">-- All consultation slots have ended for today. Please pick tomorrow or an upcoming date. --</option>';
+                            chipsHtml = '<span class="text-danger" style="font-size: 12px;"><i class="fa fa-clock-o mr-1"></i> All OPD sessions for today have passed. Please pick another date.</span>';
+                            if (slotStatusHint) slotStatusHint.textContent = '0 slots left today';
+                        } else {
+                            if (slotStatusHint) slotStatusHint.textContent = visibleSlotsCount + ' upcoming slots available';
+                        }
+
+                        if (slotSelect) slotSelect.innerHTML = selectHtml;
+                        if (slotChipsContainer) {
+                            slotChipsContainer.innerHTML = chipsHtml;
+                            attachChipListeners();
+                        }
+                    } else {
+                        if (slotSelect) slotSelect.innerHTML = '<option value="">-- Select doctor & date --</option>';
+                        if (slotChipsContainer) slotChipsContainer.innerHTML = '';
+                    }
+                })
+                .catch(function(err) {
+                    console.error('Error fetching doctor slots:', err);
+                    if (slotSelect) slotSelect.innerHTML = '<option value="">-- Error loading doctor slots --</option>';
+                });
+        }
+
+        // Clickable Slot Chips Listener
+        function attachChipListeners() {
+            var chips = document.querySelectorAll('.slot-chip-btn');
+            chips.forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var slotVal = this.getAttribute('data-slot');
+                    if (slotSelect) {
+                        slotSelect.value = slotVal;
+                    }
+                    chips.forEach(function(c) {
+                        c.style.background = '';
+                        c.style.color = '#334155';
+                        c.style.borderColor = '#cbd5e1';
+                    });
+                    this.style.background = '#69275c';
+                    this.style.color = '#ffffff';
+                    this.style.borderColor = '#69275c';
+                });
+            });
+        }
+
+        // When slotSelect changes, highlight the active chip
+        if (slotSelect) {
+            slotSelect.addEventListener('change', function() {
+                var selectedSlot = this.value;
+                var chips = document.querySelectorAll('.slot-chip-btn');
+                chips.forEach(function(c) {
+                    if (c.getAttribute('data-slot') === selectedSlot) {
+                        c.style.background = '#69275c';
+                        c.style.color = '#ffffff';
+                        c.style.borderColor = '#69275c';
+                    } else {
+                        c.style.background = '';
+                        c.style.color = '#334155';
+                        c.style.borderColor = '#cbd5e1';
+                    }
+                });
+            });
+        }
+
+        // Listeners for Doctor and Date changes
+        if (docSelect) docSelect.addEventListener('change', loadDoctorSlotsAndDay);
+        if (dateInput) dateInput.addEventListener('change', loadDoctorSlotsAndDay);
+
+        // Initial trigger on load
+        if (docSelect && docSelect.value) {
+            loadDoctorSlotsAndDay();
+        } else if (dateInput && dateInput.value) {
+            if (dayInput) dayInput.value = getDayName(dateInput.value);
         }
     });
 </script>

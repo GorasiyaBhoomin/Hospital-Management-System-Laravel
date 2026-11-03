@@ -149,7 +149,7 @@
                                         <div class="col-md-6">
                                             <div class="admin-form-group">
                                                 <label>Assigned Specialist <span class="text-danger">*</span></label>
-                                                <input type="text" class="admin-form-control no-icon" name="username" value="{{ $r2->username }}" >
+                                                <input type="text" class="admin-form-control no-icon" id="edit_apt_doctor" name="username" value="{{ $r2->username }}" required>
                                                 @error('username')
                                                     <span style="color: #dc2626; font-size: 12px; font-weight: 600;">{{ $message }}</span>
                                                 @enderror
@@ -161,7 +161,7 @@
                                                 <label>Appointment Date <span class="text-danger">*</span></label>
                                                 <div class="admin-input-wrap">
                                                     <i class="fa fa-calendar input-icon"></i>
-                                                    <input class="admin-form-control" type="date" name="date" value="{{ $r2->date }}" >
+                                                    <input class="admin-form-control" type="date" id="edit_apt_date" name="date" value="{{ $r2->date }}" required>
                                                 </div>
                                                 @error('date')
                                                     <span style="color: #dc2626; font-size: 12px; font-weight: 600;">{{ $message }}</span>
@@ -171,10 +171,23 @@
 
                                         <div class="col-md-6">
                                             <div class="admin-form-group">
+                                                <label>Consultation Day <span class="text-danger">*</span></label>
+                                                <div class="admin-input-wrap">
+                                                    <i class="fa fa-calendar-check-o input-icon"></i>
+                                                    <input class="admin-form-control" type="text" id="edit_apt_day" name="day" readonly value="{{ $r2->day ?: (\Carbon\Carbon::parse($r2->date)->format('l') ?? '') }}" style="background: #f8fafc; font-weight: 700; color: #0284c7;">
+                                                </div>
+                                                <small class="text-muted" style="font-size: 11px;">Automatically calculated from appointment date.</small>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-6">
+                                            <div class="admin-form-group">
                                                 <label>Time Slot <span class="text-danger">*</span></label>
                                                 <div class="admin-input-wrap">
                                                     <i class="fa fa-clock-o input-icon"></i>
-                                                    <input class="admin-form-control" type="time" name="time" value="{{ $r2->time }}" >
+                                                    <select class="admin-form-control" id="edit_apt_time" name="time" required style="padding-left: 42px;">
+                                                        <option value="{{ $r2->time }}" selected>{{ $r2->time }} (Current Slot)</option>
+                                                    </select>
                                                 </div>
                                                 @error('time')
                                                     <span style="color: #dc2626; font-size: 12px; font-weight: 600;">{{ $message }}</span>
@@ -230,6 +243,58 @@
         </div>
     </div>
 
+    <script src="{{ URL::to('/') }}/assets/js/jquery-3.2.1.min.js"></script>
+    <script>
+        $(document).ready(function() {
+            function getDayOfWeek(dateStr) {
+                if (!dateStr) return '';
+                var d = new Date(dateStr + 'T00:00:00');
+                var days = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'];
+                return days[d.getDay()];
+            }
+
+            function reloadDoctorSlots() {
+                var doctor = $('#edit_apt_doctor').val();
+                var date = $('#edit_apt_date').val();
+                var currentSlot = $('#edit_apt_time').val();
+
+                if (date) {
+                    $('#edit_apt_day').val(getDayOfWeek(date));
+                }
+
+                if (!doctor || !date) return;
+
+                $.ajax({
+                    url: '{{ route("doctor.slots.api") }}',
+                    type: 'GET',
+                    data: { doctor: doctor, date: date },
+                    success: function(res) {
+                        if (res.status === 'success' && res.slots && res.slots.length > 0) {
+                            var opts = '';
+                            var hasCurrent = false;
+
+                            $.each(res.slots, function(idx, s) {
+                                var isSelected = (s.slot_display === currentSlot);
+                                if (isSelected) hasCurrent = true;
+                                var seatInfo = s.is_full ? '(Full)' : '(' + s.remaining + ' seats left)';
+                                opts += '<option value="' + s.slot_display + '" ' + (isSelected ? 'selected' : '') + '>' + s.slot_display + ' ' + seatInfo + '</option>';
+                            });
+
+                            if (!hasCurrent && currentSlot) {
+                                opts = '<option value="' + currentSlot + '" selected>' + currentSlot + ' (Current Slot)</option>' + opts;
+                            }
+
+                            $('#edit_apt_time').html(opts);
+                        }
+                    }
+                });
+            }
+
+            $('#edit_apt_date').change(reloadDoctorSlots);
+            $('#edit_apt_doctor').change(reloadDoctorSlots);
+            reloadDoctorSlots();
+        });
+    </script>
 </body>
 
 </html>

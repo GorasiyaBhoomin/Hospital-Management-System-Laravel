@@ -197,6 +197,7 @@
                             <ul style="{{ Request::is('admindoctors*') || Request::is('add_doctor*') || Request::is('edit_doctor*') ? 'display: block;' : 'display: none;' }}">
                                 <li><a href="{{ url('admindoctors') }}" class="{{ Request::is('admindoctors*') ? 'active' : '' }}"><i class="fa fa-list m-r-5"></i> Doctors Directory</a></li>
                                 <li><a href="{{ url('add_doctor') }}" class="{{ Request::is('add_doctor*') ? 'active' : '' }}"><i class="fa fa-user-plus m-r-5"></i> Add Doctor</a></li>
+                                <li><a href="{{ url('/doctor/login') }}" target="_blank"><i class="fa fa-stethoscope m-r-5 text-info"></i> Doctor Portal Login</a></li>
                             </ul>
                         </li>
 

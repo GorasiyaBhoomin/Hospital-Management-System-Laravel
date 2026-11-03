@@ -244,6 +244,7 @@ public function add_doctors(Request $req){
     $req->validate([
         'username'=>'required|regex:/^[a-zA-Z]+/u|min:3',
         'email'=>'required|email:rfc,dns',
+        'password'=>'required|min:6|confirmed',
         'dob'=>'required',
         'gender'=>'required',
         'address'=>'required',
@@ -256,12 +257,14 @@ public function add_doctors(Request $req){
         'Bio'=>'required',
     ],
     [
-
-
+        'password.required' => 'Please provide a password for the doctor portal account.',
+        'password.min' => 'Doctor password must be at least 6 characters.',
+        'password.confirmed' => 'Password confirmation does not match.',
     ]); 
     $doctor = new Doctors();
     $doctor->username=$req->username;
     $doctor->email=$req->email;
+    $doctor->password=Hash::make($req->password);
     $doctor->dob=$req->dob;
     $doctor->gender=$req->gender;
     $doctor->address=$req->address;
@@ -271,6 +274,10 @@ public function add_doctors(Request $req){
     $doctor->CV=$req->CV;
     $doctor->phone=$req->phone;
     $doctor->Bio=$req->Bio;
+    $doctor->is_available=1;
+    $doctor->room_no='OPD Room #' . rand(101, 120);
+    $doctor->qualification='MBBS, MD';
+    $doctor->consultation_fee=500;
     
 if($req->hasfile('CV'))
 {
@@ -304,12 +311,46 @@ if ($req->hasfile('Avatar')) {
 }
 
     if ($doctor->save()) {
-        session()->flash('success', 'Doctor Added Successfully');
-        
+        // Initialize default time slots for the new doctor
+        $defaultSlots = [
+            ['day_of_week' => 'All Days', 'start_time' => '09:00 AM', 'end_time' => '10:00 AM', 'slot_display' => '09:00 AM - 10:00 AM', 'max_patients' => 8, 'is_active' => 1],
+            ['day_of_week' => 'All Days', 'start_time' => '10:00 AM', 'end_time' => '11:00 AM', 'slot_display' => '10:00 AM - 11:00 AM', 'max_patients' => 8, 'is_active' => 1],
+            ['day_of_week' => 'All Days', 'start_time' => '11:00 AM', 'end_time' => '12:00 PM', 'slot_display' => '11:00 AM - 12:00 PM', 'max_patients' => 6, 'is_active' => 1],
+            ['day_of_week' => 'All Days', 'start_time' => '04:00 PM', 'end_time' => '05:00 PM', 'slot_display' => '04:00 PM - 05:00 PM', 'max_patients' => 8, 'is_active' => 1],
+            ['day_of_week' => 'All Days', 'start_time' => '05:00 PM', 'end_time' => '06:00 PM', 'slot_display' => '05:00 PM - 06:00 PM', 'max_patients' => 8, 'is_active' => 1],
+        ];
+        foreach ($defaultSlots as $slot) {
+            \App\Models\DoctorTimeSlot::create([
+                'doctor_id' => $doctor->id,
+                'day_of_week' => $slot['day_of_week'],
+                'start_time' => $slot['start_time'],
+                'end_time' => $slot['end_time'],
+                'slot_display' => $slot['slot_display'],
+                'max_patients' => $slot['max_patients'],
+                'is_active' => $slot['is_active'],
+            ]);
+        }
+
+        // Initialize 7-day schedule
+        $days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday'];
+        foreach ($days as $day) {
+            $isSunday = ($day === 'Sunday');
+            \App\Models\DoctorSchedule::create([
+                'doctor_id' => $doctor->id,
+                'day_name' => $day,
+                'morning_start' => $isSunday ? null : '09:00 AM',
+                'morning_end' => $isSunday ? null : '01:00 PM',
+                'evening_start' => $isSunday ? null : '04:00 PM',
+                'evening_end' => $isSunday ? null : '07:30 PM',
+                'is_day_off' => $isSunday ? 1 : 0,
+                'notes' => $isSunday ? 'Weekly Off' : 'Regular Consultations',
+            ]);
+        }
+
+        session()->flash('success', 'Doctor Onboarded Successfully with Portal Password.');
     }
     else {
         session()->flash('error', 'Doctor  Failed');
-        
    }
     return redirect('add_doctor');
 }
@@ -384,6 +425,11 @@ public function updatedoctor(Request $request)
         'phone' => $request->phone,
         'Bio' => $request->Bio,
     ]);
+
+    if ($request->filled('password')) {
+        $doctor->password = Hash::make($request->password);
+        $doctor->save();
+    }
 
     return redirect('admindoctors')->with('success', 'Doctor updated successfully');
 }
@@ -650,13 +696,14 @@ public function delete_pressdesk($id)
 }
 // --------------------------------------------------appointment---------------------------------------------------
 public function add_appointment_validates(Request $req){
+        $maxAdvanceDate = date('Y-m-d', strtotime('+30 days'));
         $req->validate([
             'appointmentname' => 'required|regex:/^[a-zA-Z]+$/u|min:3|max:12',
             'email'=>'required|email:rfc,dns',
             'phone'=>'required|digits:10',
             'departmentname'=>'required',
             'username'=>'required',
-            'date'=>'required',
+            'date'=>'required|date|after_or_equal:today|before_or_equal:' . $maxAdvanceDate,
             'time'=>'required',
             'message'=>'required',
             'gender'=>'required',
@@ -666,10 +713,26 @@ public function add_appointment_validates(Request $req){
             'departmentname.required' => 'the department field is required',
             'appointmentname.required' => 'Your Name  is required',
             'message.required' => 'Problem facing field required',
-
-
             'username.required' => 'the doctor field is required',
+            'date.after_or_equal' => 'Appointment cannot be booked for past dates.',
+            'date.before_or_equal' => 'Appointment date exceeds the allowed 30-day monthly schedule window.',
             ]);
+
+            // Prevent booking slots that have already passed for today
+            if ($req->date === date('Y-m-d')) {
+                $timeInput = $req->time;
+                $slotStartStr = trim(explode('-', $timeInput)[0]);
+                try {
+                    $slotStart = \Carbon\Carbon::parse($req->date . ' ' . $slotStartStr, 'Asia/Kolkata');
+                    if (\Carbon\Carbon::now('Asia/Kolkata')->greaterThanOrEqualTo($slotStart)) {
+                        return back()->withInput()->withErrors([
+                            'time' => "The consultation slot '{$timeInput}' has already passed for today. Please select an upcoming slot or choose another date."
+                        ]);
+                    }
+                } catch (\Exception $e) {
+                    // ignore
+                }
+            }
             $appointment = new appointment();
             $appointment->appointmentname=$req->appointmentname;
             $appointment->email=$req->email;
@@ -679,6 +742,16 @@ public function add_appointment_validates(Request $req){
             $appointment->departmentname=$req->departmentname;
             $appointment->username=$req->username;
             $appointment->date=$req->date;
+            
+            $day = $req->input('day');
+            if (empty($day) && $req->filled('date')) {
+                try {
+                    $day = \Carbon\Carbon::parse($req->date)->format('l');
+                } catch (\Exception $e) {
+                    $day = null;
+                }
+            }
+            $appointment->day = $day;
             $appointment->time=$req->time;
             $appointment->message=$req->message;
         
@@ -769,6 +842,15 @@ public function add_appointment_validates(Request $req){
         }
     
         // Update other fields
+        $day = $request->input('day');
+        if (empty($day) && $request->filled('date')) {
+            try {
+                $day = \Carbon\Carbon::parse($request->date)->format('l');
+            } catch (\Exception $e) {
+                $day = null;
+            }
+        }
+
         $appointment->update([
             'appointmentname' => $request->appointmentname,
             'phone' => $request->phone,
@@ -776,6 +858,7 @@ public function add_appointment_validates(Request $req){
             'departmentname' => $request->departmentname,
             'username' => $request->username,
             'date' => $request->date,
+            'day' => $day,
             'time' => $request->time,
             'message' => $request->message,
             'Status' => $request->Status,
@@ -935,13 +1018,15 @@ public function changePassword(Request $request)
         return redirect()->route('kklogin123')->with('error', 'User not authenticated');
     }
 
+    /** @var \Illuminate\Database\Eloquent\Model $user */
     $user = Auth::user();
 
     if (!Hash::check($request->old_pass, $user->password)) {
         return redirect()->back()->with('error', 'The provided old password is incorrect.');
     }
 
-    $user->update(['password' => Hash::make($request->current_pass)]);
+    $user->password = Hash::make($request->current_pass);
+    $user->save();
 
     return redirect()->back()->with('success', 'Password changed successfully.');
 }
