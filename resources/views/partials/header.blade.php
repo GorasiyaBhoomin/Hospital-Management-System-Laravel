@@ -156,7 +156,7 @@
                         </div>
 
                         <!-- Appointment Action Button & Mobile Menu Toggle Container -->
-                        <div class="col-xl-3 col-lg-3 col-5 col-sm-6">
+                        <div class="col-xl-3 col-lg-3 col-5 col-sm-6 kk-header-action-col">
                             <div class="kk-header-action d-flex align-items-center justify-content-end" style="gap: 8px;">
                                 <!-- Desktop Full CTA Button -->
                                 <a class="kk-btn-appointment d-none d-lg-inline-flex" href="{{ url('appointment') }}">
@@ -169,7 +169,7 @@
                                 <!-- Mobile Compact Book Button -->
                                 <a class="kk-mobile-book-btn d-inline-flex d-lg-none" href="{{ url('appointment') }}" title="Book Appointment">
                                     <i class="fa fa-calendar-check-o"></i>
-                                    <span class="d-none d-sm-inline">Book</span>
+                                    <span>Book</span>
                                 </a>
 
                                 <!-- Mobile Slicknav Trigger Target -->
@@ -672,7 +672,7 @@
     }
 
     .kk-btn-appointment {
-        display: inline-flex !important;
+        display: inline-flex;
         align-items: center;
         gap: 9px;
         background: linear-gradient(135deg, #69275c 0%, #8b1d6b 50%, #0284c7 100%) !important;
@@ -726,55 +726,105 @@
     }
 
     /* -----------------------------------------------------------------
-       5. MOBILE RESPONSIVE HEADER & SLICKNAV NAVIGATION (PIXEL-PERFECT)
+       5. DESKTOP VIEWPORT (>= 992px)
+       STRICTLY PRESERVE ORIGINAL DESIGN:
+       Hide all mobile elements, show full appointment CTA
        ----------------------------------------------------------------- */
-    /* Desktop: STRICTLY HIDE all mobile elements */
     @media (min-width: 992px) {
+        .kk-btn-appointment {
+            display: inline-flex !important;
+        }
+
+        .kk-mobile-book-btn,
         .mobile_menu,
         .slicknav_menu,
-        .slicknav_btn,
-        .kk-mobile-book-btn {
+        .slicknav_btn {
             display: none !important;
             visibility: hidden !important;
             opacity: 0 !important;
             pointer-events: none !important;
+            width: 0 !important;
+            height: 0 !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            border: none !important;
+            overflow: hidden !important;
         }
     }
 
-    /* Mobile & Tablet Only (< 992px) */
+    /* -----------------------------------------------------------------
+       6. MOBILE & TABLET VIEWPORT (< 992px)
+       Clean, Non-Overlapping Header with 100% Full-Width Dropdown
+       ----------------------------------------------------------------- */
     @media (max-width: 991px) {
+        /* Prevent horizontal overflow wobble */
+        html, body {
+            overflow-x: hidden !important;
+            max-width: 100% !important;
+        }
+
+        /* Strictly hide the full desktop button on mobile to avoid overlapping */
+        .kk-btn-appointment {
+            display: none !important;
+            visibility: hidden !important;
+            width: 0 !important;
+            height: 0 !important;
+            padding: 0 !important;
+            margin: 0 !important;
+            overflow: hidden !important;
+        }
+
+        /* Mobile action container: exactly 2 items (Book CTA + Hamburger) */
+        .kk-header-action {
+            display: flex !important;
+            align-items: center !important;
+            justify-content: flex-end !important;
+            gap: 8px !important;
+        }
+
+        /* Clean Mobile Book Appointment CTA */
         .kk-mobile-book-btn {
             display: inline-flex !important;
-            align-items: center;
-            gap: 5px;
-            background: linear-gradient(135deg, #69275c 0%, #00a896 100%);
+            align-items: center !important;
+            gap: 6px !important;
+            background: linear-gradient(135deg, #69275c 0%, #8b1d6b 100%) !important;
             color: #ffffff !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
-            font-size: 12.5px !important;
+            font-size: 13px !important;
             font-weight: 700 !important;
-            padding: 7px 13px !important;
+            padding: 7px 14px !important;
             border-radius: 50px !important;
             text-decoration: none !important;
-            box-shadow: 0 3px 10px rgba(105, 39, 92, 0.22);
-            white-space: nowrap;
-            transition: all 0.25s ease;
+            box-shadow: 0 3px 10px rgba(105, 39, 92, 0.25) !important;
+            white-space: nowrap !important;
+            transition: all 0.25s ease !important;
+            flex-shrink: 0 !important;
         }
         .kk-mobile-book-btn:hover {
+            background: #501d46 !important;
             transform: translateY(-1px);
-            box-shadow: 0 5px 14px rgba(105, 39, 92, 0.35);
+            box-shadow: 0 5px 14px rgba(105, 39, 92, 0.35) !important;
             color: #ffffff !important;
+        }
+        .kk-mobile-book-btn i {
+            font-size: 13px !important;
         }
 
         /* Container for mobile menu target */
         .mobile_menu {
-            position: static !important;
-            width: auto !important;
             display: inline-flex !important;
             align-items: center !important;
+            justify-content: center !important;
+            position: static !important;
+            width: auto !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            flex-shrink: 0 !important;
         }
 
         .slicknav_menu {
-            display: block !important;
+            display: inline-flex !important;
+            align-items: center !important;
             position: static !important;
             background: transparent !important;
             padding: 0 !important;
@@ -785,49 +835,65 @@
 
         /* Modern Hamburger Button */
         .slicknav_btn {
-            position: static !important;
-            top: 0 !important;
-            right: 0 !important;
-            margin: 0 !important;
-            float: none !important;
-            background: linear-gradient(135deg, #69275c 0%, #8b1d6b 100%) !important;
-            border-radius: 10px !important;
-            padding: 8px 10px !important;
-            cursor: pointer !important;
             display: inline-flex !important;
             align-items: center !important;
             justify-content: center !important;
+            width: 38px !important;
+            height: 38px !important;
+            background: linear-gradient(135deg, #69275c 0%, #8b1d6b 100%) !important;
+            border-radius: 10px !important;
+            padding: 0 !important;
+            margin: 0 !important;
             border: none !important;
+            cursor: pointer !important;
             box-shadow: 0 2px 8px rgba(105, 39, 92, 0.28) !important;
             transition: all 0.25s ease !important;
             text-decoration: none !important;
+            float: none !important;
+            position: static !important;
         }
         .slicknav_btn:hover {
-            background: #69275c !important;
+            background: #501d46 !important;
             transform: scale(1.05);
         }
         .slicknav_btn .slicknav_icon {
             margin: 0 !important;
-            top: 0 !important;
-            right: 0 !important;
             width: 18px !important;
-            height: 15px !important;
-            display: block !important;
+            height: 14px !important;
+            display: flex !important;
+            flex-direction: column !important;
+            justify-content: space-between !important;
+            float: none !important;
+            position: static !important;
         }
         .slicknav_btn .slicknav_icon-bar {
             background-color: #ffffff !important;
             width: 18px !important;
-            height: 2.5px !important;
-            margin: 3px 0 !important;
+            height: 2.2px !important;
             border-radius: 2px !important;
             display: block !important;
+            margin: 0 !important;
+            float: none !important;
         }
 
-        /* Full Width Dropdown Panel */
+        /* Dropdown positioning relative to the full-width navbar strip */
         .main-header-area.kk-navbar-strip {
             position: relative !important;
         }
+        .main-header-area.kk-navbar-strip .container {
+            position: static !important;
+        }
+        .main-header-area.kk-navbar-strip .row {
+            position: static !important;
+        }
+        .kk-header-action-col {
+            position: static !important;
+        }
+        .kk-header-action {
+            position: static !important;
+        }
 
+        /* 100% Full-Width Dropdown across the entire screen width */
         .slicknav_menu .slicknav_nav {
             position: absolute !important;
             top: 100% !important;
@@ -835,18 +901,24 @@
             right: 0 !important;
             width: 100% !important;
             background: #ffffff !important;
-            box-shadow: 0 18px 40px rgba(15, 23, 42, 0.16) !important;
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.18) !important;
             border-top: 1px solid #eef2f6 !important;
-            border-bottom: 3.5px solid #69275c !important;
+            border-bottom: 4px solid #69275c !important;
             border-radius: 0 0 18px 18px !important;
-            padding: 12px 18px 20px !important;
+            padding: 12px 18px 24px !important;
             margin: 0 !important;
             z-index: 99999 !important;
             max-height: 80vh !important;
             overflow-y: auto !important;
+            -webkit-overflow-scrolling: touch;
         }
 
-        /* Mobile Nav Items */
+        /* Dropdown collapse when closed by SlickNav */
+        .slicknav_menu .slicknav_nav.slicknav_hidden {
+            display: none !important;
+        }
+
+        /* Mobile Navigation List Items */
         .slicknav_menu .slicknav_nav > li {
             border-bottom: 1px solid #f1f5f9 !important;
             margin: 0 !important;
@@ -861,8 +933,8 @@
             color: #1e293b !important;
             font-family: 'Plus Jakarta Sans', sans-serif !important;
             font-size: 15px !important;
-            font-weight: 700 !important;
-            padding: 10px 14px !important;
+            font-weight: 600 !important;
+            padding: 11px 14px !important;
             border-radius: 8px !important;
             display: flex !important;
             align-items: center !important;
@@ -887,17 +959,16 @@
         .slicknav_menu .slicknav_arrow {
             float: none !important;
             margin-left: auto !important;
-            font-size: 16px !important;
-            font-weight: 800 !important;
+            font-size: 18px !important;
+            font-weight: 700 !important;
             color: #69275c !important;
-            position: static !important;
-            top: auto !important;
+            line-height: 1 !important;
             display: inline-block !important;
         }
 
-        /* Submenus (Nested Accordion inside Pages & Contact) */
-        .slicknav_nav .kk-dropdown-card,
-        .slicknav_menu .slicknav_nav ul {
+        /* Submenus (Pages & Contact Accordions) */
+        .slicknav_menu .slicknav_nav ul,
+        .slicknav_nav .kk-dropdown-card {
             position: static !important;
             transform: none !important;
             opacity: 1 !important;
@@ -905,14 +976,18 @@
             pointer-events: auto !important;
             box-shadow: none !important;
             border: none !important;
-            border-left: 3px solid #00a896 !important;
+            border-left: 3px solid #69275c !important;
             background: #f8fafc !important;
-            border-radius: 8px !important;
-            padding: 6px 8px !important;
-            margin: 4px 0 8px 12px !important;
+            border-radius: 10px !important;
+            padding: 6px 10px !important;
+            margin: 4px 0 10px 10px !important;
             min-width: unset !important;
             width: auto !important;
-            display: block !important;
+        }
+
+        .slicknav_menu .slicknav_nav ul.slicknav_hidden,
+        .slicknav_nav .kk-dropdown-card.slicknav_hidden {
+            display: none !important;
         }
 
         .slicknav_nav .kk-dropdown-card li {
@@ -969,6 +1044,12 @@
         .slicknav_nav .kk-item-arrow {
             display: none !important;
         }
+        .slicknav_menu .slicknav_nav .kk-chevron-icon {
+            display: none !important;
+        }
+        .slicknav_menu .slicknav_nav .kk-drop-icon i {
+            display: inline-block !important;
+        }
 
         @media (max-width: 767px) {
             .kk-hospital-logo {
@@ -981,6 +1062,14 @@
         @media (max-width: 420px) {
             .kk-hospital-logo {
                 max-height: 32px !important;
+            }
+            .kk-mobile-book-btn {
+                padding: 6px 11px !important;
+                font-size: 12px !important;
+            }
+            .slicknav_btn {
+                width: 34px !important;
+                height: 34px !important;
             }
         }
     }
