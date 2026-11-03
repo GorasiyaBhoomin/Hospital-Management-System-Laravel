@@ -140,7 +140,7 @@
                     All Consultations <span class="tab-badge">{{ $tally['all'] }}</span>
                 </button>
                 <button type="button" class="filter-tab-pill" onclick="setDocStatusFilter('approved', this)">
-                    <i class="fa fa-check text-success"></i> Confirmed <span class="tab-badge">{{ $tally['approved'] }}</span>
+                    <i class="fa fa-check text-success"></i> Approved <span class="tab-badge">{{ $tally['approved'] }}</span>
                 </button>
                 <button type="button" class="filter-tab-pill" onclick="setDocStatusFilter('pending', this)">
                     <i class="fa fa-clock-o text-warning"></i> Pending <span class="tab-badge">{{ $tally['pending'] }}</span>
@@ -182,8 +182,9 @@
                         <th style="min-width: 240px;">Patient Profile</th>
                         <th style="min-width: 180px;">Schedule Date & Slot</th>
                         <th style="min-width: 200px;">Chief Complaint / Reason</th>
-                        <th style="width: 140px; text-align: center;">Consultation Status</th>
-                        <th style="width: 130px; text-align: right;">OPD Slip & Actions</th>
+                        <th style="width: 135px; text-align: center;">Consultation Status</th>
+                        <th style="min-width: 175px; text-align: center;">Prescription</th>
+                        <th style="width: 125px; text-align: right;">OPD Slip & Call</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -328,7 +329,51 @@
                                 </div>
                             </td>
 
-                            <!-- 6. Actions -->
+                            <!-- 6. Prescription Management Column -->
+                            <td class="text-center" style="white-space: nowrap !important;">
+                                @if($apt->prescription)
+                                    @if($apt->prescription->isIssued())
+                                        <div class="d-inline-flex flex-column align-items-center gap-1">
+                                            <span class="badge badge-success font-weight-bold px-2 py-1 mb-1" style="font-size: 10px; background: #00a896; border-radius: 4px;">
+                                                <i class="fa fa-check-circle"></i> Issued
+                                            </span>
+                                            <a href="{{ route('doctor.prescription.view', $apt->prescription->id) }}" target="_blank" class="btn btn-sm text-white rounded-pill px-3 py-1 font-weight-bold" style="font-size: 11.5px; background: #0284c7; border: none; box-shadow: 0 2px 6px rgba(2,132,199,0.25);" title="View Finalized Prescription">
+                                                <i class="fa fa-file-text-o m-r-3"></i> View Prescription
+                                            </a>
+                                        </div>
+                                    @else
+                                        <!-- Draft Prescription -->
+                                        <div class="d-inline-flex flex-column align-items-center gap-1">
+                                            <span class="badge badge-warning text-dark font-weight-bold px-2 py-1 mb-1" style="font-size: 10px; border-radius: 4px;">
+                                                <i class="fa fa-pencil"></i> Draft
+                                            </span>
+                                            <div class="d-flex align-items-center gap-1">
+                                                <a href="{{ route('doctor.prescription.edit', $apt->prescription->id) }}" class="btn btn-sm btn-outline-warning rounded-pill px-2 py-1 font-weight-bold" style="font-size: 11px;" title="Continue Editing Draft">
+                                                    <i class="fa fa-edit"></i> Edit Draft
+                                                </a>
+                                                <a href="{{ route('doctor.prescription.view', $apt->prescription->id) }}" target="_blank" class="btn btn-sm btn-outline-secondary rounded-pill px-2 py-1 font-weight-bold" style="font-size: 11px;" title="Preview Draft">
+                                                    <i class="fa fa-eye"></i> View
+                                                </a>
+                                            </div>
+                                        </div>
+                                    @endif
+                                @else
+                                    {{-- No prescription created yet --}}
+                                    @if($st === 'completed')
+                                        <!-- ONLY show Add Prescription when appointment status is completed -->
+                                        <a href="{{ route('doctor.prescription.create', $apt->id) }}" class="btn btn-sm text-white rounded-pill px-3 py-1 font-weight-bold" style="font-size: 11.5px; background: #69275c; border: none; box-shadow: 0 2px 8px rgba(105,39,92,0.25);" title="Create Clinical Prescription">
+                                            <i class="fa fa-plus-circle m-r-4"></i> Add Prescription
+                                        </a>
+                                    @else
+                                        <!-- For pending, approved, cancelled, etc: do not display Add Prescription button -->
+                                        <span class="text-muted" style="font-size: 11.5px; font-weight: 500;">
+                                            <i class="fa fa-minus text-muted m-r-3"></i> No Prescription
+                                        </span>
+                                    @endif
+                                @endif
+                            </td>
+
+                            <!-- 7. Actions -->
                             <td class="text-right" style="white-space: nowrap !important;">
                                 <!-- Official Digital OPD Slip Voucher -->
                                 <a href="{{ url('/user/appointment/' . $apt->id . '/slip') }}" target="_blank" class="btn btn-sm btn-light border rounded-pill px-3 py-1 font-weight-bold" style="font-size: 12px; color: #69275c;" title="View & Print Official OPD Slip">
@@ -343,7 +388,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="text-center py-5">
+                            <td colspan="7" class="text-center py-5">
                                 <div style="font-size: 40px; color: #cbd5e1; margin-bottom: 8px;"><i class="fa fa-calendar-times-o"></i></div>
                                 <h5 style="color: #64748b; font-weight: 700;">No Consultations Found</h5>
                                 <p style="color: #94a3b8; font-size: 13px;">No patient appointments match the selected filter criteria.</p>
@@ -352,7 +397,7 @@
                     @endforelse
 
                     <tr id="docNoMatchRow" style="display: none;">
-                        <td colspan="6" class="text-center py-5">
+                        <td colspan="7" class="text-center py-5">
                             <div style="font-size: 36px; color: #94a3b8; margin-bottom: 8px;"><i class="fa fa-search"></i></div>
                             <h6 style="color: #475569; font-weight: 700;">No Matching Consultations Found</h6>
                             <p style="color: #94a3b8; font-size: 12.5px;">Try clearing your search query or switching the status filter tab.</p>

@@ -941,7 +941,7 @@
                                                            class="modern-form-input" 
                                                            placeholder="e.g. Ramesh" 
                                                            value="{{ old('name') }}" 
-                                                           required 
+                                                            
                                                            minlength="3" 
                                                            maxlength="12">
                                                     <i class="fa fa-user"></i>
@@ -968,7 +968,7 @@
                                                            class="modern-form-input" 
                                                            placeholder="e.g. name@gmail.com" 
                                                            value="{{ old('email') }}" 
-                                                           required>
+                                                           >
                                                     <i class="fa fa-envelope"></i>
                                                 </div>
                                                 <div class="field-hint-text">
@@ -991,7 +991,7 @@
                                                               id="feedbackMessage" 
                                                               class="modern-form-textarea" 
                                                               placeholder="Please share details of your doctor consultation, nursing care, wait time, or amenities..." 
-                                                              required>{{ old('message') }}</textarea>
+                                                              >{{ old('message') }}</textarea>
                                                     <i class="fa fa-commenting"></i>
                                                 </div>
                                                 <div class="field-hint-text">

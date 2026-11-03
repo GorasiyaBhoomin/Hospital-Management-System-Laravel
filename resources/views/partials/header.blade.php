@@ -95,18 +95,7 @@
                                                         <i class="ti-angle-right kk-item-arrow"></i>
                                                     </a>
                                                 </li>
-                                                <li>
-                                                    <a class="kk-dropdown-item" href="{{ url('/doctor/login') }}">
-                                                        <div class="kk-drop-icon" style="background: #e6f7f5;">
-                                                            <i class="fa fa-user-md" style="color: #00a896;"></i>
-                                                        </div>
-                                                        <div class="kk-drop-text">
-                                                            <strong class="kk-drop-title">Doctor Portal</strong>
-                                                            <small class="kk-drop-subtitle">Specialist Console & OPD Login</small>
-                                                        </div>
-                                                        <i class="ti-angle-right kk-item-arrow"></i>
-                                                    </a>
-                                                </li>
+                                                
                                             </ul>
                                         </li>
 
@@ -169,38 +158,7 @@
                         <!-- Appointment Action Button & Patient Portal Pill -->
                         <div class="col-xl-3 col-lg-3 col-4">
                             <div class="kk-header-action text-right d-flex align-items-center justify-content-end" style="gap: 10px;">
-                                @if(Auth::check())
-                                    <div class="dropdown d-none d-md-inline-block">
-                                        <button class="kk-btn-portal dropdown-toggle" type="button" id="patientPortalDrop" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" style="cursor: pointer; border: 1.5px solid #ebdbe8; background: #fbf5fa; color: #69275c; padding: 8px 16px; border-radius: 50px; font-weight: 700; font-size: 13px; display: inline-flex; align-items: center; gap: 7px; text-decoration: none !important;">
-                                            <i class="fa fa-user-circle" style="font-size: 15px;"></i>
-                                            <span>{{ Str::words(Auth::user()->name, 1, '') }}</span>
-                                        </button>
-                                        <div class="dropdown-menu dropdown-menu-right shadow-lg border-0 rounded-4 p-2 mt-2" aria-labelledby="patientPortalDrop" style="min-width: 220px; z-index: 9999; border-radius: 14px;">
-                                            <div class="px-3 py-2 border-bottom">
-                                                <strong class="d-block text-dark" style="font-size: 13.5px;">{{ Auth::user()->name }}</strong>
-                                                <small class="text-muted" style="font-size: 11.5px;">{{ Auth::user()->email }}</small>
-                                            </div>
-                                            <a class="dropdown-item py-2 rounded-2 mt-1" href="{{ Auth::user()->is_admin ? url('/admin/admindashboard') : url('/user/dashboard') }}">
-                                                <i class="fa fa-th-large text-primary m-r-5"></i> Dashboard
-                                            </a>
-                                            <a class="dropdown-item py-2 rounded-2" href="{{ url('/user/book-appointment') }}">
-                                                <i class="fa fa-calendar-plus-o text-success m-r-5"></i> Book Appointment
-                                            </a>
-                                            <a class="dropdown-item py-2 rounded-2" href="{{ url('/user/appointment-history') }}">
-                                                <i class="fa fa-history text-info m-r-5"></i> My Appointments
-                                            </a>
-                                            <a class="dropdown-item py-2 rounded-2" href="{{ url('/user/profile') }}">
-                                                <i class="fa fa-user-circle text-warning m-r-5"></i> My Profile
-                                            </a>
-                                            <div class="dropdown-divider"></div>
-                                            <a class="dropdown-item py-2 rounded-2 text-danger" href="{{ url('/user/logout') }}">
-                                                <i class="fa fa-sign-out m-r-5"></i> Logout
-                                            </a>
-                                        </div>
-                                    </div>
-                                @else
-                                  
-                                @endif
+                               
 
                                 <a class="kk-btn-appointment" href="{{ url('appointment') }}">
                                     <span class="kk-btn-icon-wrap">

@@ -861,7 +861,7 @@
                                         <i class="fa fa-user-circle"></i>
                                     </div>
                                     <div>
-                                        <strong style="font-size: 13.5px; display: block; color: #0f172a;">Patient Account Required</strong>
+                                        <strong style="font-size: 13.5px; display: block; color: #0f172a;">Patient Account </strong>
                                         <span style="font-size: 12.5px; color: #64748b;">Please login to confirm and book your OPD appointment.</span>
                                     </div>
                                 </div>
@@ -1031,7 +1031,7 @@
                                         <i class="fa fa-clock-o"></i> Doctor OPD Time Slot <span class="req">*</span>
                                     </label>
                                     <div class="input-control-box select-picker-box">
-                                        <select id="time" name="time" class="modern-field modern-select @error('time') is-invalid-field @enderror" required>
+                                        <select id="time" name="time" class="modern-field modern-select @error('time') is-invalid-field @enderror" >
                                             <option value="">Select Doctor & Date First</option>
                                         </select>
                                     </div>

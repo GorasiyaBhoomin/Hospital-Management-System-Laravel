@@ -92,3 +92,4 @@ class Prescription extends Model
         return 'RX-' . date('Y') . '-' . str_pad($appointmentId, 5, '0', STR_PAD_LEFT);
     }
 }
+

@@ -29,3 +29,4 @@ class PrescriptionMedicine extends Model
         return $this->belongsTo(Prescription::class, 'prescription_id');
     }
 }
+

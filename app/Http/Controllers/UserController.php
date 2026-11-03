@@ -78,7 +78,7 @@ class UserController extends Controller
         $request->validate([
             'name'                  => 'required|string|max:120',
             'email'                 => 'required|string|email:rfc,dns|max:150|unique:users,email',
-            'phone'                 => 'required|string|max:20',
+            'phone'                 => 'string|max:20',
             'password'              => 'required|string|min:6|confirmed',
             'city'                  => 'nullable|string|max:100',
             'address'               => 'nullable|string|max:255',
@@ -138,6 +138,7 @@ class UserController extends Controller
         $upcomingAppointments = (clone $query)
             ->whereDate('date', '>=', date('Y-m-d'))
             ->where('Status', '!=', 'Cancelled')
+            ->where('Status', '!=', 'Completed')
             ->count();
         $completedAppointments = (clone $query)
             ->where(function($q) {
@@ -147,7 +148,7 @@ class UserController extends Controller
             ->count();
         $pendingAppointments = (clone $query)->where('Status', 'Pending')->count();
 
-        $recentAppointments = (clone $query)->orderByDesc('id')->take(5)->get();
+        $recentAppointments = (clone $query)->with(['prescription'])->orderByDesc('id')->take(5)->get();
 
         $departments = Department::all();
         $doctors = Doctors::all();

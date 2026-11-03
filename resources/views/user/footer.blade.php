@@ -141,11 +141,7 @@
                         </div>
                     </div>
 
-                    <div class="mt-3 pt-2 border-top">
-                        <a href="{{ url('/') }}" class="user-switch-site-btn">
-                            <i class="fa fa-globe"></i> Return to Main Hospital Website &rarr;
-                        </a>
-                    </div>
+                    
                 </div>
 
                 <!-- Col 3: Hospital Campus & Emergency -->
@@ -190,19 +186,13 @@
         <div class="container">
             <div class="d-flex align-items-center justify-content-between flex-wrap gap-2">
                 <span class="user-copyright-text">
+                                    <center>
+
                     &copy; {{ date('Y') }} <strong>KK Patel Super Speciality Hospital</strong>, Bhuj. Patient Medical Management Portal.
+                                </center>
+
                 </span>
-                <div class="user-footer-bottom-nav">
-                    <a href="{{ url('/user/dashboard') }}">Dashboard</a>
-                    <span class="sep">&bull;</span>
-                    <a href="{{ url('/user/appointment-history') }}">Appointments</a>
-                    <span class="sep">&bull;</span>
-                    <a href="{{ url('/user/profile') }}">Profile</a>
-                    <span class="sep">&bull;</span>
-                    <a href="{{ url('/') }}">Main Website</a>
-                    <span class="sep">&bull;</span>
-                    <a href="{{ url('/user/logout') }}" class="text-danger font-weight-bold">Log Out</a>
-                </div>
+                
             </div>
         </div>
     </div>

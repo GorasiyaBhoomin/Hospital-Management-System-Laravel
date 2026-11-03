@@ -209,14 +209,26 @@
                                         <div class="col-md-12">
                                             <div class="admin-form-group">
                                                 <label>Appointment Clinical Status <span class="text-danger">*</span></label>
-                                                <div class="d-flex align-items-center gap-4 pt-1">
-                                                    <label class="d-flex align-items-center gap-2 mb-0" style="cursor: pointer; font-weight: 700; color: #059669;">
-                                                        <input type="radio" name="Status" value="Approved" {{ $r2['Status'] == 'Approved' ? 'checked' : '' }} >
+                                                @php
+                                                    $currentStatus = strtolower(trim((string)($r2->Status ?? $r2['Status'] ?? 'pending')));
+                                                    if ($currentStatus === 'rejected') $currentStatus = 'cancelled';
+                                                @endphp
+                                                <div class="d-flex align-items-center gap-3 pt-1 flex-wrap">
+                                                    <label class="d-flex align-items-center gap-2 mb-0" style="cursor: pointer; font-weight: 700; color: #d97706; background: #fffbeb; border: 1.5px solid {{ $currentStatus === 'pending' ? '#d97706' : '#fde68a' }}; border-radius: 8px; padding: 7px 14px; font-size: 13px;">
+                                                        <input type="radio" name="Status" value="Pending" {{ $currentStatus === 'pending' ? 'checked' : '' }} required>
+                                                        <span><i class="fa fa-clock-o"></i> Pending</span>
+                                                    </label>
+                                                    <label class="d-flex align-items-center gap-2 mb-0" style="cursor: pointer; font-weight: 700; color: #0284c7; background: #f0f9ff; border: 1.5px solid {{ $currentStatus === 'approved' ? '#0284c7' : '#bae6fd' }}; border-radius: 8px; padding: 7px 14px; font-size: 13px;">
+                                                        <input type="radio" name="Status" value="Approved" {{ $currentStatus === 'approved' ? 'checked' : '' }} required>
                                                         <span><i class="fa fa-check-circle"></i> Approved</span>
                                                     </label>
-                                                    <label class="d-flex align-items-center gap-2 mb-0" style="cursor: pointer; font-weight: 700; color: #dc2626;">
-                                                        <input type="radio" name="Status" value="Rejected" {{ $r2['Status'] == 'Rejected' ? 'checked' : '' }} >
-                                                        <span><i class="fa fa-times-circle"></i> Rejected</span>
+                                                    <label class="d-flex align-items-center gap-2 mb-0" style="cursor: pointer; font-weight: 700; color: #059669; background: #ecfdf5; border: 1.5px solid {{ $currentStatus === 'completed' ? '#059669' : '#a7f3d0' }}; border-radius: 8px; padding: 7px 14px; font-size: 13px;">
+                                                        <input type="radio" name="Status" value="Completed" {{ $currentStatus === 'completed' ? 'checked' : '' }} required>
+                                                        <span><i class="fa fa-check-square"></i> Completed</span>
+                                                    </label>
+                                                    <label class="d-flex align-items-center gap-2 mb-0" style="cursor: pointer; font-weight: 700; color: #dc2626; background: #fef2f2; border: 1.5px solid {{ $currentStatus === 'cancelled' ? '#dc2626' : '#fecaca' }}; border-radius: 8px; padding: 7px 14px; font-size: 13px;">
+                                                        <input type="radio" name="Status" value="Cancelled" {{ $currentStatus === 'cancelled' ? 'checked' : '' }} required>
+                                                        <span><i class="fa fa-times-circle"></i> Cancelled</span>
                                                     </label>
                                                 </div>
                                                 @error('Status')
@@ -225,6 +237,85 @@
                                             </div>
                                         </div>
                                     </div>
+
+                                    <!-- Section 4: Clinical Prescription Details (Read-Only for Admin) -->
+                                    @if($r2->prescription)
+                                        <div class="mt-4 pt-3" style="border-top: 1.5px dashed #cbd5e1;">
+                                            <div class="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                                                <div class="form-section-title mb-0">
+                                                    <i class="fa fa-medkit text-success"></i> 4. Doctor's Clinical Prescription
+                                                </div>
+                                                <div class="d-flex align-items-center gap-2">
+                                                    @if($r2->prescription->isIssued())
+                                                        <span class="badge badge-success px-3 py-1 font-weight-bold" style="font-size: 11.5px; background: #00a896;">
+                                                            <i class="fa fa-check-circle"></i> Officially Issued
+                                                        </span>
+                                                    @else
+                                                        <span class="badge badge-warning text-dark px-3 py-1 font-weight-bold" style="font-size: 11.5px;">
+                                                            <i class="fa fa-pencil"></i> Draft Record
+                                                        </span>
+                                                    @endif
+                                                    <a href="{{ route('admin.prescription.view', $r2->prescription->id) }}" target="_blank" class="btn btn-sm btn-outline-primary rounded-pill px-3 font-weight-bold" style="font-size: 12px;">
+                                                        <i class="fa fa-file-text-o"></i> View & Print Prescription
+                                                    </a>
+                                                </div>
+                                            </div>
+
+                                            <div style="background: #f8fafc; border: 1.5px solid #e2e8f0; border-radius: 12px; padding: 18px 20px;">
+                                                <div class="row">
+                                                    <div class="col-md-4 mb-2">
+                                                        <small class="text-muted text-uppercase font-weight-bold" style="font-size: 10.5px;">Prescription Reference</small>
+                                                        <div style="font-family: monospace; font-size: 14px; font-weight: 800; color: #69275c;">
+                                                            {{ $r2->prescription->prescription_number }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 mb-2">
+                                                        <small class="text-muted text-uppercase font-weight-bold" style="font-size: 10.5px;">Consulting Doctor</small>
+                                                        <div style="font-weight: 700; color: #0f172a;">
+                                                            @php
+                                                                $docRaw = $r2->prescription->doctor_name ?: ($r2->prescription->doctor->username ?? $r2->username);
+                                                                $docClean = (stripos(trim((string)$docRaw), 'dr.') === 0 || stripos(trim((string)$docRaw), 'dr ') === 0) ? $docRaw : 'Dr. ' . $docRaw;
+                                                            @endphp
+                                                            {{ $docClean }}
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-4 mb-2">
+                                                        <small class="text-muted text-uppercase font-weight-bold" style="font-size: 10.5px;">Prescription Date</small>
+                                                        <div style="font-weight: 700; color: #0f172a;">
+                                                            {{ date('d M Y', strtotime($r2->prescription->created_at)) }}
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-12 mt-2 mb-2">
+                                                        <div style="background: #ffffff; border: 1px solid #99f6e4; border-left: 4px solid #00a896; border-radius: 8px; padding: 10px 14px;">
+                                                            <span style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: #0f766e;">Clinical Diagnosis:</span>
+                                                            <strong style="color: #0f172a; margin-left: 6px;">{{ $r2->prescription->diagnosis }}</strong>
+                                                        </div>
+                                                    </div>
+
+                                                    @if($r2->prescription->medicines && $r2->prescription->medicines->count() > 0)
+                                                        <div class="col-12 mt-2">
+                                                            <small class="text-muted text-uppercase font-weight-bold" style="font-size: 10.5px;">Prescribed Medications ({{ $r2->prescription->medicines->count() }})</small>
+                                                            <ul class="list-group list-group-flush border rounded mt-1" style="background: #fff; font-size: 12.5px;">
+                                                                @foreach($r2->prescription->medicines as $m)
+                                                                    <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-3">
+                                                                        <span><strong>{{ $m->medicine_name }}</strong> <span class="text-muted">({{ $m->dosage ?: '-' }})</span></span>
+                                                                        <span class="badge badge-light border text-primary">{{ $m->frequency ?: 'As directed' }} &bull; {{ $m->duration ?: '-' }}</span>
+                                                                    </li>
+                                                                @endforeach
+                                                            </ul>
+                                                        </div>
+                                                    @endif
+
+                                                    <div class="col-12 mt-3">
+                                                        <div style="font-size: 11.5px; color: #64748b; background: #fffbeb; border: 1px solid #fde68a; border-radius: 8px; padding: 8px 12px;">
+                                                            <i class="fa fa-lock text-warning m-r-4"></i> <strong>Medical Integrity Notice:</strong> Clinical diagnosis and prescriptions are legally authored by attending medical officers and cannot be altered by administrative staff.
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    @endif
 
                                     <!-- Form Actions -->
                                     <div class="mt-5 pt-3 text-right" style="border-top: 1px solid var(--border-light); display: flex; justify-content: flex-end; gap: 12px;">

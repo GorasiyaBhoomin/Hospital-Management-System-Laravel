@@ -674,7 +674,7 @@
                         </label>
                         <div class="input-icon-wrap">
                             <input type="password" id="adminPassword" name="password" class="form-control-custom"
-                                   placeholder="Enter your security password" required>
+                                   placeholder="Enter your security password" >
                             <i class="fa fa-lock field-icon"></i>
                             <button type="button" class="toggle-password-btn" id="togglePasswordBtn" title="Show/Hide Password">
                                 <i class="fa fa-eye" id="togglePasswordIcon"></i>

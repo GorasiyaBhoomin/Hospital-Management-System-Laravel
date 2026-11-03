@@ -387,7 +387,7 @@
                 @endphp
                 @if($status == 'approved' || $status == 'confirmed')
                     <span class="badge badge-pill badge-success" style="font-size: 12.5px; font-weight: 700; padding: 5px 12px;">
-                        <i class="fa fa-check-circle"></i> CONFIRMED
+                        <i class="fa fa-check-circle"></i> APPROVED
                     </span>
                 @elseif($status == 'completed')
                     <span class="badge badge-pill badge-primary" style="font-size: 12.5px; font-weight: 700; padding: 5px 12px; background: #0284c7;">

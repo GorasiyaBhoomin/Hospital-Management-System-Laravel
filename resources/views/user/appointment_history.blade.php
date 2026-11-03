@@ -117,6 +117,31 @@
         color: #ffffff !important;
     }
 
+    .btn-action-rx {
+        background: linear-gradient(135deg, #0284c7 0%, #0369a1 100%) !important;
+        color: #ffffff !important;
+        border: none !important;
+        font-size: 12px !important;
+        font-weight: 700 !important;
+        padding: 7px 15px !important;
+        border-radius: 50px !important;
+        display: inline-flex !important;
+        align-items: center !important;
+        gap: 6px !important;
+        cursor: pointer !important;
+        text-decoration: none !important;
+        box-shadow: 0 2px 8px rgba(2, 132, 199, 0.28) !important;
+        transition: all 0.18s ease !important;
+        white-space: nowrap !important;
+    }
+
+    .btn-action-rx:hover {
+        background: linear-gradient(135deg, #0369a1 0%, #075985 100%) !important;
+        transform: translateY(-1px) !important;
+        box-shadow: 0 4px 12px rgba(2, 132, 199, 0.38) !important;
+        color: #ffffff !important;
+    }
+
     .btn-action-preview {
         background: #f0f9ff !important;
         color: #0284c7 !important;
@@ -592,7 +617,7 @@
                         All <span class="tab-count">{{ count($appointments) }}</span>
                     </button>
                     <button type="button" class="status-tab-btn" data-filter="approved">
-                        Confirmed <span class="tab-count">{{ $appointments->where('Status', 'Approved')->count() }}</span>
+                        Approved <span class="tab-count">{{ $appointments->where('Status', 'Approved')->count() }}</span>
                     </button>
                     <button type="button" class="status-tab-btn" data-filter="pending">
                         Pending <span class="tab-count">{{ $appointments->where('Status', 'Pending')->count() }}</span>
@@ -619,8 +644,9 @@
                             <th style="padding: 14px 20px; font-weight: 800; color: #0f172a; width: 140px;">OPD Token #</th>
                             <th style="padding: 14px 20px; font-weight: 800; color: #0f172a;">Doctor & Speciality</th>
                             <th style="padding: 14px 20px; font-weight: 800; color: #0f172a;">Allotted Date & Time</th>
-                            <th style="padding: 14px 20px; font-weight: 800; color: #0f172a; width: 140px;">Status</th>
-                            <th style="padding: 14px 20px; font-weight: 800; color: #0f172a; text-align: right; width: 320px; white-space: nowrap;">Actions</th>
+                            <th style="padding: 14px 20px; font-weight: 800; color: #0f172a; width: 130px;">Status</th>
+                            <th style="padding: 14px 20px; font-weight: 800; color: #0f172a; text-align: center; width: 160px;">Prescription</th>
+                            <th style="padding: 14px 20px; font-weight: 800; color: #0f172a; text-align: right; width: 280px; white-space: nowrap;">Actions</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -661,7 +687,7 @@
                                 <td style="padding: 16px 20px; vertical-align: middle;">
                                     @if($statusSlug == 'approved' || $statusSlug == 'confirmed')
                                         <span class="badge badge-pill" style="background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; padding: 5px 12px; font-size: 12px; font-weight: 700;">
-                                             <i class="fa fa-check-circle"></i> Confirmed
+                                             <i class="fa fa-check-circle"></i> Approved
                                         </span>
                                     @elseif($statusSlug == 'cancelled')
                                         <span class="badge badge-pill" style="background: #fef2f2; color: #dc2626; border: 1px solid #fecaca; padding: 5px 12px; font-size: 12px; font-weight: 700;">
@@ -674,6 +700,23 @@
                                     @else
                                         <span class="badge badge-pill" style="background: #fffbeb; color: #d97706; border: 1px solid #fde68a; padding: 5px 12px; font-size: 12px; font-weight: 700;">
                                             <i class="fa fa-clock-o"></i> Pending
+                                        </span>
+                                    @endif
+                                </td>
+
+                                <!-- Prescription Column -->
+                                <td style="padding: 14px 20px; vertical-align: middle; text-align: center; white-space: nowrap;">
+                                    @if($apt->prescription && $apt->prescription->isIssued())
+                                        <a href="{{ url('/user/prescription/' . $apt->prescription->id) }}" target="_blank" class="btn-action-rx" title="View & Download Official Medical Prescription">
+                                            <i class="fa fa-stethoscope"></i> View Rx
+                                        </a>
+                                    @elseif($apt->prescription && $apt->prescription->isDraft())
+                                        <span class="badge badge-light border text-muted" style="font-size: 11px; padding: 5px 10px;" title="Prescription is being drafted by the doctor">
+                                            <i class="fa fa-clock-o text-warning"></i> In Preparation
+                                        </span>
+                                    @else
+                                        <span class="text-muted" style="font-size: 11.5px; font-weight: 500;">
+                                            <i class="fa fa-minus"></i> No Prescription
                                         </span>
                                     @endif
                                 </td>
@@ -724,7 +767,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="5" class="text-center py-5">
+                                <td colspan="6" class="text-center py-5">
                                     <div style="width: 60px; height: 60px; border-radius: 50%; background: #fbf5fa; color: #69275c; display: flex; align-items: center; justify-content: center; font-size: 26px; margin: 0 auto 12px;">
                                         <i class="fa fa-calendar-o"></i>
                                     </div>
@@ -1099,7 +1142,7 @@
         var stBadge = document.getElementById('modalStatusBadge');
         if (stBadge) {
             var stLower = (status || 'pending').toLowerCase();
-            stBadge.innerText = (status || 'CONFIRMED').toUpperCase();
+            stBadge.innerText = (status || 'APPROVED').toUpperCase();
             if (stLower === 'approved' || stLower === 'confirmed') {
                 stBadge.className = 'badge badge-pill badge-success';
             } else if (stLower === 'completed') {

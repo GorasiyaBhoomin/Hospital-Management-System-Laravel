@@ -314,6 +314,16 @@
             color: #ffffff;
             box-shadow: 0 4px 12px rgba(105, 39, 92, 0.35);
         }
+        .btn-pill-rx {
+            background: #f0fdfa;
+            color: #00a896;
+            border: 1px solid #99f6e4;
+        }
+        .btn-pill-rx:hover {
+            background: #00a896;
+            color: #ffffff;
+            box-shadow: 0 4px 12px rgba(0, 168, 150, 0.35);
+        }
 
         /* Table Action Cell */
         .td-actions {
@@ -438,10 +448,13 @@
                         All Consultations <span class="tab-badge">{{ count($std3) }}</span>
                     </button>
                     <button type="button" class="status-tab-pill" onclick="setFilterStatus('approved', this)">
-                        <i class="fa fa-check text-success"></i> Confirmed <span class="tab-badge">{{ $std3->filter(fn($a) => in_array(strtolower($a->Status ?? ''), ['approved', 'completed']))->count() }}</span>
+                        <i class="fa fa-check text-success"></i> Approved <span class="tab-badge">{{ $std3->filter(fn($a) => strtolower($a->Status ?? '') === 'approved')->count() }}</span>
                     </button>
                     <button type="button" class="status-tab-pill" onclick="setFilterStatus('pending', this)">
                         <i class="fa fa-clock-o text-warning"></i> Pending <span class="tab-badge">{{ $std3->filter(fn($a) => in_array(strtolower($a->Status ?? ''), ['pending', '']))->count() }}</span>
+                    </button>
+                    <button type="button" class="status-tab-pill" onclick="setFilterStatus('completed', this)">
+                        <i class="fa fa-check-circle text-primary"></i> Completed <span class="tab-badge">{{ $std3->filter(fn($a) => strtolower($a->Status ?? '') === 'completed')->count() }}</span>
                     </button>
                     <button type="button" class="status-tab-pill" onclick="setFilterStatus('cancelled', this)">
                         <i class="fa fa-times text-danger"></i> Cancelled <span class="tab-badge">{{ $std3->filter(fn($a) => in_array(strtolower($a->Status ?? ''), ['cancelled', 'rejected']))->count() }}</span>
@@ -481,8 +494,9 @@
                                 <th style="min-width: 190px;">Specialist & Department</th>
                                 <th style="min-width: 180px;">Schedule Date & Slot</th>
                                 <th style="min-width: 160px;">Chief Complaint</th>
-                                <th style="width: 130px; text-align: center;">Status</th>
-                                <th style="width: 130px; text-align: right;">Actions</th>
+                                <th style="width: 120px; text-align: center;">Status</th>
+                                <th style="width: 140px; text-align: center;">Prescription</th>
+                                <th style="width: 145px; text-align: right;">Actions</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -585,9 +599,13 @@
                                     <!-- 6. Status with 1-Click State Changer Dropdown -->
                                     <td class="text-center" style="white-space: nowrap !important;">
                                         <div class="dropdown d-inline-block">
-                                            @if($st == 'approved' || $st == 'completed')
+                                            @if($st == 'approved')
                                                 <button class="status-dropdown-btn badge-status-approved dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Click to change status">
-                                                    <i class="fa fa-check-circle"></i> Approved
+                                                    <i class="fa fa-check"></i> Approved
+                                                </button>
+                                            @elseif($st == 'completed')
+                                                <button class="status-dropdown-btn dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Click to change status" style="background: #ecfdf5; color: #059669; border: 1px solid #a7f3d0; border-radius: 20px; padding: 4px 12px; font-weight: 700; font-size: 11.5px;">
+                                                    <i class="fa fa-check-circle"></i> Completed
                                                 </button>
                                             @elseif($st == 'pending')
                                                 <button class="status-dropdown-btn badge-status-pending dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Click to change status">
@@ -595,19 +613,23 @@
                                                 </button>
                                             @else
                                                 <button class="status-dropdown-btn badge-status-rejected dropdown-toggle" type="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" title="Click to change status">
-                                                    <i class="fa fa-times-circle"></i> {{ ucfirst($st) }}
+                                                    <i class="fa fa-times-circle"></i> Cancelled
                                                 </button>
                                             @endif
 
                                             <!-- Dropdown Options to Quickly Change Status -->
-                                            <div class="dropdown-menu dropdown-menu-right shadow-sm border-0" style="border-radius: 12px; font-size: 12.5px; min-width: 150px;">
+                                            <div class="dropdown-menu dropdown-menu-right shadow-sm border-0" style="border-radius: 12px; font-size: 12.5px; min-width: 160px;">
                                                 <h6 class="dropdown-header text-uppercase" style="font-size: 10px; font-weight: 800; color: #94a3b8;">Set Status</h6>
                                                 <a class="dropdown-item text-success font-weight-bold" href="{{ url('/admin/appointment/' . $r2->id . '/status/Approved') }}">
-                                                    <i class="fa fa-check-circle m-r-5"></i> Mark Approved
+                                                    <i class="fa fa-check m-r-5"></i> Mark Approved
                                                 </a>
-                                                <a class="dropdown-item text-primary font-weight-bold" href="{{ url('/admin/appointment/' . $r2->id . '/status/Pending') }}">
+                                                <a class="dropdown-item text-primary font-weight-bold" href="{{ url('/admin/appointment/' . $r2->id . '/status/Completed') }}">
+                                                    <i class="fa fa-check-circle m-r-5"></i> Mark Completed
+                                                </a>
+                                                <a class="dropdown-item text-warning font-weight-bold" href="{{ url('/admin/appointment/' . $r2->id . '/status/Pending') }}">
                                                     <i class="fa fa-clock-o m-r-5"></i> Mark Pending
                                                 </a>
+                                                <div class="dropdown-divider my-1"></div>
                                                 <a class="dropdown-item text-danger font-weight-bold" href="{{ url('/admin/appointment/' . $r2->id . '/status/Cancelled') }}">
                                                     <i class="fa fa-times-circle m-r-5"></i> Mark Cancelled
                                                 </a>
@@ -615,8 +637,34 @@
                                         </div>
                                     </td>
 
-                                    <!-- 7. Actions (Always Visible on Screen) -->
+                                    <!-- 7. Prescription Status & View -->
+                                    <td class="text-center" style="white-space: nowrap !important;">
+                                        @if($r2->prescription)
+                                            @if($r2->prescription->isIssued())
+                                                <a href="{{ route('admin.prescription.view', $r2->prescription->id) }}" target="_blank" class="badge badge-success px-2 py-1 font-weight-bold" style="font-size: 11px; background: #00a896; text-decoration: none;" title="View Finalized Prescription">
+                                                    <i class="fa fa-file-text-o m-r-3"></i> Issued (View)
+                                                </a>
+                                            @else
+                                                <a href="{{ route('admin.prescription.view', $r2->prescription->id) }}" target="_blank" class="badge badge-warning text-dark px-2 py-1 font-weight-bold" style="font-size: 11px; text-decoration: none;" title="View Draft Prescription">
+                                                    <i class="fa fa-pencil m-r-3"></i> Draft (View)
+                                                </a>
+                                            @endif
+                                        @else
+                                            <span class="text-muted" style="font-size: 11px; font-weight: 500;">
+                                                <i class="fa fa-minus"></i> No Prescription
+                                            </span>
+                                        @endif
+                                    </td>
+
+                                    <!-- 8. Actions (Always Visible on Screen) -->
                                     <td class="td-actions">
+                                        <!-- View Prescription Document (if exists) -->
+                                        @if($r2->prescription)
+                                            <a href="{{ route('admin.prescription.view', $r2->prescription->id) }}" target="_blank" class="action-btn-pill btn-pill-rx" title="View Official Medical Prescription">
+                                                <i class="fa fa-stethoscope"></i>
+                                            </a>
+                                        @endif
+
                                         <!-- View / Print OPD Slip Voucher -->
                                         <a href="{{ url('/user/appointment/' . $r2->id . '/slip') }}" target="_blank" class="action-btn-pill btn-pill-slip" title="View & Print Official OPD Slip">
                                             <i class="fa fa-file-text-o"></i>
@@ -636,7 +684,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="7" class="text-center py-5">
+                                    <td colspan="8" class="text-center py-5">
                                         <div style="font-size: 42px; color: #cbd5e1; margin-bottom: 12px;"><i class="fa fa-calendar-times-o"></i></div>
                                         <h5 style="color: #64748b; font-weight: 700;">No Patient Appointments Found</h5>
                                         <p style="color: #94a3b8; font-size: 13px;">No patient consultations have been booked in the hospital system yet.</p>
@@ -649,7 +697,7 @@
 
                             <!-- Hidden No Matches Row (Used by Live JS Search) -->
                             <tr id="noMatchesRow" style="display: none;">
-                                <td colspan="7" class="text-center py-5">
+                                <td colspan="8" class="text-center py-5">
                                     <div style="font-size: 36px; color: #94a3b8; margin-bottom: 8px;"><i class="fa fa-search"></i></div>
                                     <h6 style="color: #475569; font-weight: 700;">No Matching Appointments Found</h6>
                                     <p style="color: #94a3b8; font-size: 12.5px; margin-bottom: 10px;">Try adjusting your search terms or status filter tab.</p>

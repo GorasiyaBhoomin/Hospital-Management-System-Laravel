@@ -837,12 +837,12 @@ public function add_appointment_validates(Request $req){
     {
         $departments = Department::orderBy('departmentname', 'asc')->get(); // Fetch departments
         if (is_numeric($email)) {
-            $std3 = Appointment::where('id', $email)->get();
+            $std3 = Appointment::with('prescription.medicines')->where('id', $email)->get();
             if ($std3->isEmpty()) {
-                $std3 = Appointment::where('email', $email)->get();
+                $std3 = Appointment::with('prescription.medicines')->where('email', $email)->get();
             }
         } else {
-            $std3 = Appointment::where('email', $email)->get();
+            $std3 = Appointment::with('prescription.medicines')->where('email', $email)->get();
         }
         return view('admin.edit_appointment', compact('std3', 'departments'));
     }
