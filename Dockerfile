@@ -1,49 +1,53 @@
-# ==============================================================================
-# Stage 1: Build Frontend Assets (Vite / Tailwind / JS)
-# ==============================================================================
-FROM node:18-alpine AS frontend
-WORKDIR /app
-COPY package*.json vite.config.js ./
-COPY resources ./resources
-COPY public ./public
-RUN npm install && npm run build
 
-# ==============================================================================
-# Stage 2: Production PHP 8.2 + Nginx Web Server
-# ==============================================================================
-FROM richarvey/nginx-php-fpm:latest
+# Build frontend assets
+FROM node:20-alpine AS frontend
+
+WORKDIR /app
+
+COPY package.json yarn.lock* ./
+
+RUN corepack enable && yarn install
+
+COPY . .
+
+RUN yarn build
+
+
+# Laravel PHP environment
+FROM php:8.3-apache
+
+RUN apt-get update && apt-get install -y \
+    git unzip libzip-dev libicu-dev libpng-dev libjpeg-dev libfreetype6-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo_mysql mbstring bcmath exif pcntl gd zip intl \
+    && a2enmod rewrite \
+    && rm -rf /var/lib/apt/lists/*
+
+# Install Composer
+COPY --from=composer:2 /usr/bin/composer /usr/bin/composer
 
 WORKDIR /var/www/html
 
-# Copy all application code
-COPY . /var/www/html
+COPY . .
 
-# Copy compiled Vite assets from Stage 1
-COPY --from=frontend /app/public/build /var/www/html/public/build
-
-# Render & Image environment configurations
-ENV SKIP_COMPOSER=0
-ENV WEBROOT=/var/www/html/public
-ENV PHP_ERRORS_STDERR=1
-ENV RUN_SCRIPTS=1
-ENV REAL_IP_HEADER=1
-
-# Laravel environment defaults
-ENV APP_ENV=production
-ENV APP_DEBUG=false
-ENV LOG_CHANNEL=stderr
-ENV COMPOSER_ALLOW_SUPERUSER=1
-
-# Install PHP production dependencies via Composer
 RUN composer install --no-dev --optimize-autoloader --no-interaction
 
-# Set proper permissions for Laravel writable directories
-RUN chown -R nginx:nginx /var/www/html/storage /var/www/html/bootstrap/cache \
-    && chmod -R 775 /var/www/html/storage /var/www/html/bootstrap/cache
+# Copy Vite production assets
+COPY --from=frontend /app/public/build ./public/build
 
-# Expose HTTP port (Render forwards external HTTPS traffic to port 80)
-EXPOSE 80
+# Configure Apache for Laravel public directory
+RUN sed -ri 's!/var/www/html!/var/www/html/public!g' \
+    /etc/apache2/sites-available/000-default.conf \
+    && sed -i 's/Listen 80/Listen 10000/' /etc/apache2/ports.conf \
+    && sed -i 's/:80>/:10000>/' /etc/apache2/sites-available/000-default.conf \
+    && printf '<Directory /var/www/html/public>\nAllowOverride All\nRequire all granted\n</Directory>\n' \
+    > /etc/apache2/conf-available/laravel.conf \
+    && a2enconf laravel
 
-# Start Nginx and PHP-FPM
-CMD ["/start.sh"]
+# Laravel permissions
+RUN chown -R www-data:www-data storage bootstrap/cache \
+    && chmod -R 775 storage bootstrap/cache
 
+EXPOSE 10000
+
+CMD ["apache2-foreground"]
