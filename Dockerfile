@@ -17,7 +17,7 @@ RUN yarn build
 FROM php:8.3-apache
 
 RUN apt-get update && apt-get install -y \
-    git unzip libzip-dev libicu-dev libpng-dev libjpeg-dev libfreetype6-dev \
+    git unzip libzip-dev libicu-dev libpng-dev libjpeg-dev libfreetype6-dev libonig-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo_mysql mbstring bcmath exif pcntl gd zip intl \
     && a2enmod rewrite \
