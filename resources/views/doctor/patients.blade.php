@@ -191,7 +191,7 @@
                                                     </span>
                                                 </td>
                                                 <td class="text-right">
-                                                    <a href="{{ url('/user/appointment/' . $aptHistory->id . '/slip') }}" target="_blank" class="btn btn-sm btn-light border rounded-pill px-2 py-1 font-weight-bold" style="font-size: 11px;">
+                                                    <a href="{{ route('doctor.appointment.slip', $aptHistory->id) }}" target="_blank" class="btn btn-sm btn-light border rounded-pill px-2 py-1 font-weight-bold" style="font-size: 11px;">
                                                         <i class="fa fa-file-text-o text-primary"></i> View Slip
                                                     </a>
                                                 </td>

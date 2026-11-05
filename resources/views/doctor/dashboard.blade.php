@@ -258,7 +258,7 @@
                                         </form>
 
                                         <!-- Official Digital Slip Link -->
-                                        <a href="{{ url('/user/appointment/' . $apt->id . '/slip') }}" target="_blank" class="btn btn-sm btn-light border rounded-pill px-2 py-1 ml-1" style="font-size: 11px;" title="View Slip">
+                                        <a href="{{ route('doctor.appointment.slip', $apt->id) }}" target="_blank" class="btn btn-sm btn-light border rounded-pill px-2 py-1 ml-1" style="font-size: 11px;" title="View Slip">
                                             <i class="fa fa-file-text-o text-primary"></i>
                                         </a>
                                     </td>
@@ -327,7 +327,7 @@
                                         @endif
                                     </td>
                                     <td class="text-right">
-                                        <a href="{{ url('/user/appointment/' . $recent->id . '/slip') }}" target="_blank" class="btn btn-sm btn-light border rounded-pill px-3 py-1 font-weight-bold" style="font-size: 11px;">
+                                        <a href="{{ route('doctor.appointment.slip', $recent->id) }}" target="_blank" class="btn btn-sm btn-light border rounded-pill px-3 py-1 font-weight-bold" style="font-size: 11px;">
                                             <i class="fa fa-external-link text-primary m-r-4"></i> View Slip
                                         </a>
                                     </td>

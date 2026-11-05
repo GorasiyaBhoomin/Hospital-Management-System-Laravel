@@ -547,6 +547,28 @@ class DoctorController extends Controller
         return view('prescription.view', compact('prescription', 'role', 'backUrl', 'doctor'));
     }
 
+    /**
+     * View and Print Full OPD Consultation Token Slip from Doctor Console
+     */
+    public function viewSlip($id)
+    {
+        $doctor = $this->getDoctor();
+        if (!$doctor) {
+            return redirect()->route('doctor.login');
+        }
+
+        $appointment = appointment::where('id', $id)->firstOrFail();
+
+        // Optional: fetch associated registered patient profile if available
+        $user = !empty($appointment->user_id)
+            ? User::find($appointment->user_id)
+            : User::where('email', $appointment->email)->first();
+
+        $backUrl = route('doctor.appointments');
+
+        return view('user.opd_slip', compact('appointment', 'user', 'backUrl', 'doctor'));
+    }
+
     // =========================================================================
     // 4. MANAGE TIME SLOTS (CRUD OPERATION FORMS)
     // =========================================================================

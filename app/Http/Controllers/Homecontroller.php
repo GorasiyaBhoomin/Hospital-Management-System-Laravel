@@ -25,6 +25,10 @@ class Homecontroller extends Controller
             return redirect()->route('user.login')->with('error', 'Please sign in to your patient account first to confirm and book your appointment.');
         }
 
+        if (Auth::user()->is_admin) {
+            return redirect('/add_appointment')->with('error', 'Appointment booking is only for registered patient users, not for Admin accounts. Please use the Admin Appointment Manager.');
+        }
+
         $maxAdvanceDate = date('Y-m-d', strtotime('+30 days'));
 
         $req->validate([
@@ -118,6 +122,15 @@ class Homecontroller extends Controller
     }
     
     public function appointment(Request $request){
+        if (!Auth::check()) {
+            session(['url.intended' => url('/appointment')]);
+            return redirect()->route('user.login')->with('error', 'Please sign in to your patient account first to book an appointment.');
+        }
+
+        if (Auth::user()->is_admin) {
+            return redirect('/add_appointment')->with('error', 'Appointment booking on this form is only for registered patient users, not for Admin accounts. Please use the Admin Appointment Manager.');
+        }
+
         try {
             $data['departments']=DB::table('department')->orderBy('departmentname','asc')->get();
         } catch (\Throwable $e) {

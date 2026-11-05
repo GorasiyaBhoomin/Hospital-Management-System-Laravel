@@ -331,8 +331,19 @@
     <!-- 1. Top Action Toolbar (Never Printed) -->
     <div class="slip-toolbar">
         <div>
-            <a href="{{ url('/user/appointment-history') }}" class="btn-toolbar-action btn-toolbar-back">
-                <i class="fa fa-arrow-left"></i> Back to Appointments
+            @php
+                $resolvedBack = $backUrl ?? url('/user/appointment-history');
+                $backLabel = 'Back to Appointments';
+                if (isset($backUrl)) {
+                    if (str_contains($backUrl, 'doctor')) {
+                        $backLabel = 'Back to Doctor Console';
+                    } elseif (str_contains($backUrl, 'admin')) {
+                        $backLabel = 'Back to Admin Portal';
+                    }
+                }
+            @endphp
+            <a href="{{ $resolvedBack }}" class="btn-toolbar-action btn-toolbar-back">
+                <i class="fa fa-arrow-left"></i> {{ $backLabel }}
             </a>
         </div>
         <div class="d-flex align-items-center gap-2">

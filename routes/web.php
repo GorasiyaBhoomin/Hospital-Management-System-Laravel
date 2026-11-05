@@ -27,7 +27,6 @@ Route::get('contact', [Homecontroller::class, 'contact_fetch_data']);
 Route::view('feedbackreview', 'feedbackreview');
 Route::post('feedbackreview_validates', [Homecontroller::class, 'feedbackreview_validates']);
 Route::get('feedbackreviews', [Homecontroller::class, 'feedbackreview_fetch_data']);
-Route::view('appointment', 'appointment');
 Route::get('/appointment', [Homecontroller::class,'appointment']);
 Route::post('appointmentform_validates', [Homecontroller::class, 'appointmentform_validates']);
 Route::post('/getdoctor', [Homecontroller::class,'getdoctor']);
@@ -179,14 +178,16 @@ Route::middleware(['web', 'auth'])->group(function() {
     Route::get('/user/book-appointment', [UserController::class, 'bookAppointment'])->name('user.appointment.book');
     Route::post('/user/book-appointment', [UserController::class, 'storeAppointment'])->name('user.appointment.store');
 
-    Route::get('/user/appointment-history', [UserController::class, 'appointmentHistory'])->name('user.appointment.history');
-    Route::get('/user/appointment/{id}/slip', [UserController::class, 'viewSlip'])->name('user.appointment.slip');
+        Route::get('/user/appointment-history', [UserController::class, 'appointmentHistory'])->name('user.appointment.history');
     Route::get('/user/prescription/{id}', [UserController::class, 'viewPrescription'])->name('user.prescription.view');
     Route::post('/user/appointment/{id}/cancel', [UserController::class, 'cancelAppointment'])->name('user.appointment.cancel');
 
     Route::get('/user/doctors', [UserController::class, 'doctors'])->name('user.doctors');
     Route::get('/user/departments', [UserController::class, 'departments'])->name('user.departments');
 });
+
+// Digital OPD Consultation Slip (Accessible to Patient, Doctor, or Admin)
+Route::get('/user/appointment/{id}/slip', [UserController::class, 'viewSlip'])->name('user.appointment.slip')->middleware('web');
 
 // =============================================================================
 // DOCTOR PANEL ROUTES (Dedicated Clinical Operations & Availability Console)
@@ -206,6 +207,7 @@ Route::middleware(['web', 'doctor.auth'])->group(function() {
 
     // My Appointments
     Route::get('/doctor/appointments', [DoctorController::class, 'appointments'])->name('doctor.appointments');
+    Route::get('/doctor/appointment/{id}/slip', [DoctorController::class, 'viewSlip'])->name('doctor.appointment.slip');
     Route::post('/doctor/appointment/{id}/status', [DoctorController::class, 'updateAppointmentStatus'])->name('doctor.appointment.status');
 
     // Prescription Management

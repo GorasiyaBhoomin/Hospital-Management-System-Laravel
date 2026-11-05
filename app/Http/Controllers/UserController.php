@@ -387,20 +387,43 @@ class UserController extends Controller
      */
     public function viewSlip($id)
     {
+        $doctor = Auth::guard('doctor')->user();
         $user = Auth::user();
 
+        // 1. Doctor Access (via doctor guard)
+        if ($doctor) {
+            $appointment = appointment::where('id', $id)->firstOrFail();
+            $patientUser = !empty($appointment->user_id)
+                ? User::find($appointment->user_id)
+                : User::where('email', $appointment->email)->first();
+            $backUrl = route('doctor.appointments');
+            return view('user.opd_slip', ['appointment' => $appointment, 'user' => $patientUser, 'backUrl' => $backUrl, 'doctor' => $doctor]);
+        }
+
+        // 2. Admin Access
         if ($user && $user->is_admin == 1) {
             $appointment = appointment::where('id', $id)->firstOrFail();
-        } else {
+            $patientUser = !empty($appointment->user_id)
+                ? User::find($appointment->user_id)
+                : User::where('email', $appointment->email)->first();
+            $backUrl = url('/adminappointments');
+            return view('user.opd_slip', ['appointment' => $appointment, 'user' => $patientUser, 'backUrl' => $backUrl]);
+        }
+
+        // 3. Registered Patient Access
+        if ($user) {
             $appointment = appointment::where('id', $id)
                 ->where(function($q) use ($user) {
                     $q->where('user_id', $user->id)
                       ->orWhere('email', $user->email);
                 })
                 ->firstOrFail();
+            $backUrl = route('user.appointment.history');
+            return view('user.opd_slip', compact('appointment', 'user', 'backUrl'));
         }
 
-        return view('user.opd_slip', compact('appointment', 'user'));
+        // 4. Not Authenticated
+        return redirect()->route('user.login')->with('error', 'Please log in to view the consultation slip.');
     }
 
     /**

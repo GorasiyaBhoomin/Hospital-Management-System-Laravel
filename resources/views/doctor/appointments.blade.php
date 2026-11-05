@@ -376,7 +376,7 @@
                             <!-- 7. Actions -->
                             <td class="text-right" style="white-space: nowrap !important;">
                                 <!-- Official Digital OPD Slip Voucher -->
-                                <a href="{{ url('/user/appointment/' . $apt->id . '/slip') }}" target="_blank" class="btn btn-sm btn-light border rounded-pill px-3 py-1 font-weight-bold" style="font-size: 12px; color: #69275c;" title="View & Print Official OPD Slip">
+                                <a href="{{ route('doctor.appointment.slip', $apt->id) }}" target="_blank" class="btn btn-sm btn-light border rounded-pill px-3 py-1 font-weight-bold" style="font-size: 12px; color: #69275c;" title="View & Print Official OPD Slip">
                                     <i class="fa fa-file-text-o m-r-4"></i> Slip
                                 </a>
 

@@ -864,7 +864,23 @@
                                     My Portal &rarr;
                                 </a>
                             </div>
-                        @elseif(!Auth::check())
+                        @elseif(Auth::check() && Auth::user()->is_admin)
+                            <!-- Admin Notice Banner -->
+                            <div class="alert mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2" style="background: #fffbeb; border: 1.5px solid #fde68a; border-radius: 14px; padding: 14px 20px; color: #92400e;">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div style="width: 36px; height: 36px; border-radius: 50%; background: #fef3c7; color: #d97706; display: flex; align-items: center; justify-content: center; font-size: 16px;">
+                                        <i class="fa fa-shield"></i>
+                                    </div>
+                                    <div>
+                                        <strong style="font-size: 13.5px; display: block; color: #0f172a;">Administrator Account Active</strong>
+                                        <span style="font-size: 12.5px; color: #78350f;">Public appointment booking is only for registered patient users, not for Admin. To book or manage appointments, please use the Admin Appointment Console.</span>
+                                    </div>
+                                </div>
+                                <a href="{{ url('/add_appointment') }}" class="btn btn-sm rounded-pill px-3 py-2 font-weight-bold" style="background: #d97706; color: #ffffff !important; text-decoration: none;">
+                                    <i class="fa fa-calendar-plus-o"></i> Admin Console &rarr;
+                                </a>
+                            </div>
+                        @else
                             <!-- Patient Login Required Banner (Guests Only) -->
                             <div class="alert mb-4 d-flex align-items-center justify-content-between flex-wrap gap-2" style="background: #fdf2f8; border: 1.5px solid #fbcfe8; border-radius: 14px; padding: 14px 20px; color: #831843;">
                                 <div class="d-flex align-items-center gap-3">
@@ -872,12 +888,12 @@
                                         <i class="fa fa-user-circle"></i>
                                     </div>
                                     <div>
-                                        <strong style="font-size: 13.5px; display: block; color: #0f172a;">Patient Account </strong>
-                                        <span style="font-size: 12.5px; color: #64748b;">Please login to confirm and book your OPD appointment.</span>
+                                        <strong style="font-size: 13.5px; display: block; color: #0f172a;">Patient Account Required</strong>
+                                        <span style="font-size: 12.5px; color: #64748b;">You must be logged in as a patient to book an appointment.</span>
                                     </div>
                                 </div>
                                 <a href="{{ route('user.login') }}" class="btn btn-sm rounded-pill px-3 py-2 font-weight-bold" style="background: #69275c; color: #ffffff !important; text-decoration: none;">
-                                    <i class="fa fa-sign-in"></i> Sign In / Register
+                                    <i class="fa fa-sign-in"></i> Sign In to Book
                                 </a>
                             </div>
                         @endif
